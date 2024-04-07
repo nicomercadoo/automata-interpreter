@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+afnd-runner
+
+# VSC
+.vscode
