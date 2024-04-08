@@ -1,5 +1,5 @@
 #include <iostream>
-#include <headers/automata.hpp>
+#include <../headers/automata.hpp>
 
 using namespace std;
 

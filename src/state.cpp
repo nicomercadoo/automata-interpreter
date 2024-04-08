@@ -1,10 +1,10 @@
-#include <headers/state.hpp>
+#include <../headers/state.hpp>
 
 State::State(string id, bool initial, bool final) : id(id),
                                                     initial(initial),
                                                     final(final)
 {
-    this->transitions = unordered_multimap<Symbol<string>, State *>();
+    this->transitions = unordered_multimap<Symbol<string>, State *, Symbol<string>::hash>();
 };
 
 State::~State(){};
@@ -32,4 +32,8 @@ bool State::is_final()
 bool State::operator==(const State &other) const
 {
     return this->id == other.get_id();
+}
+
+bool State::operator<(const State &other) const {
+    return this->id < other.get_id();
 }

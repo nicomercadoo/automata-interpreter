@@ -13,8 +13,8 @@ private:
 public:
     AutomataRep();
     ~AutomataRep();
-    void add_state(State *state);
-    void add_transition(State *from_state, Symbol<string> symbol, State *to_state);
+    void add_state(std::string id, bool initial, bool final);
+    void add_transition(string from_state, string symbol, string to_state);
     State *get_state(string state);
     void from_dot(string path);
     void to_dot(string path);

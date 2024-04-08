@@ -1,0 +1,6 @@
+^digraph{$
+^\s?inic\[shape=point\];$
+^\s?inic->[[:alpha:]]\d;$
+^\s?([[:alpha:]]\d->[[:alpha:]]\d \[label="\w+"\];)+$
+^\s?([[:alpha:]]\d[shape=doublecircle];)+$
+^}$

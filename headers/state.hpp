@@ -12,7 +12,7 @@ private:
     string id;
     bool initial;
     bool final;
-    unordered_multimap<Symbol<string>, State*> transitions;
+    unordered_multimap<Symbol<string>, State*, Symbol<string>::hash> transitions;
 
 public:
     State(string id, bool initial, bool final);
@@ -24,4 +24,6 @@ public:
 
     // Overload the == operator to make the class equatable
     bool operator==(const State &other) const;
+
+    bool operator<(const State &other) const;
 };

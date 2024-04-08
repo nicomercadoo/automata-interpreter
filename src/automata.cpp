@@ -1,5 +1,4 @@
-#include <headers/automata.hpp>
-// #include <headers/state.hpp>
+#include <../headers/automata.hpp>
 #include <set>
 
 using namespace std;
@@ -11,16 +10,12 @@ Automata::Automata(Nature nature) : nature(nature)
 
 void Automata::add_state(string id, bool initial, bool final)
 {
-    auto state = new State(id, initial, final);
-    this->rep.add_state(state);
+    this->rep.add_state(id, initial, final);
 }
 
 void Automata::add_transition(string from_state, string symbol, string to_state)
 {
-    auto from = this->rep.get_state(from_state);
-    auto to = this->rep.get_state(to_state);
-    auto symbol = Symbol<string>(symbol);
-    this->rep.add_transition(from, symbol, to);
+    this->rep.add_transition(from_state, symbol, to_state);
 }
 
 Nature Automata::get_nature()
