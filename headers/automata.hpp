@@ -1,8 +1,7 @@
 #pragma once
-#include <state.hpp>
-#include <symbol.hpp>
-#include <automata-rep.hpp>
-#include <set>
+#include "state.hpp"
+#include "symbol.hpp"
+#include "automata-rep.hpp"
 
 // using namespace std;
 enum Nature
@@ -29,11 +28,11 @@ public:
     Automata(Nature nature);
     ~Automata();
     bool deterministic_inv(); // determina si el automata es deterministico y esta correctamente implementado (ningun nodo tiene mas de una transicion con el mismo simbolo y no teine transiciones lambda)
-    void from_dot(string path);
-    void to_dot(string path);
-    void add_transition(string from_state, string symbol, string to_state);
-    void add_state(string id, bool initial, bool final);
+    void from_dot(std::string path);
+    void to_dot(std::string path);
+    void add_transition(std::string from_state, std::string symbol, std::string to_state);
+    void add_state(std::string id, bool initial, bool final);
     Nature get_nature();
-    auto delta(State *state, Symbol<string> symbol);
+    auto delta(State *state, Symbol<std::string> symbol);
 };
 

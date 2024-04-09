@@ -1,8 +1,6 @@
 #pragma once
 #include <string>
 
-using namespace std;
-
 template <typename T>
 class Symbol
 {
@@ -17,6 +15,7 @@ public:
     // Overload the == operator to make the class equatable
     bool operator==(const Symbol &other) const;
 
+    // Overload the < operator to make the class comparable
     bool operator<(const Symbol &other) const;
 
     // Custom hash function for Symbol
@@ -28,9 +27,3 @@ public:
         }
     };
 };
-
-// template <typename T>
-// struct std::hash<Symbol<T>>
-// {
-//     std::size_t operator()(const Symbol<T> &s) const;
-// };

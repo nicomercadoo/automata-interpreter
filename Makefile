@@ -1,43 +1,96 @@
+MAKEFLAGS += --no-print-directory
 CXX = g++
+CXX_FLAGS = -std=c++17 -I $(HEADERS_F)/
+W_FLAGS = -Wall -Wextra -Werror -Wpedantic
 HEADERS_F = headers
 SRC_F = src
 BUILD_F = build
 OBJS = $(BUILD_F)/main.o $(BUILD_F)/automata.o $(BUILD_F)/automata-rep.o $(BUILD_F)/state.o $(BUILD_F)/symbol.o
-BINARY = afnd-runner
+BINARY = ./afnd-runner
 
-main:
-	g++ src/* -o afnd-runner -I headers
+# TIP: Take a look to usefull phony rules at the end of this file!
 
-# main: executable
+### executable compilation rules
 
-# executable: $(OBJS)
-# 	g++ src/* -o afnd-runner -I headers
-# 	$(CXX) -o $(BINARY) $(OBJS) -I $(HEADERS_F)/
+main: executable
 
-# dbg: $(OBJS)
-# 	$(CXX) -g3 -o $(BINARY) $(OBJS)
+executable: $(OBJS)
+	@echo
+	@echo "\e[1;33mCreating executable...\e[0m"
+	@mkdir -p $(BUILD_F)
+	$(CXX) $(CXX_FLAGS) -o $(BINARY) $(OBJS)
+	@echo
+	@echo "\e[1;33mExecutable created:\e[0m $(BINARY)"
 
-# main.o: $(SRC_F)/main.cpp $(HEADERS_F)/*
-# 	$(CXX) -c $(SRC_F)/main.cpp -o $(BUILD_F)/main.o -I $(HEADERS_F)/
+dbg: $(OBJS)
+	@echo
+	@echo "\e[1;33mCreating executable with debug objects...\e[0m"
+	@mkdir -p $(BUILD_F)
+	$(CXX) $(CXX_FLAGS) -g3 -o $(BINARY) $(OBJS)
+	@echo
+	@echo "\e[1;33mExecutable with debug objects created: $(BINARY)\e[0m"
 
-# # main.cpp: $(HEADERS_F)/automata.h $(HEADERS_F)/automata-rep.h $(HEADERS_F)/state.h $(HEADERS_F)/symbol.h
+### objects files compilation rules
 
-# automata.o: automata.cpp $(HEADERS_F)/automata.h
-# 	$(CXX) -c automata.cpp -o $(BUILD_F)/automata.o
+$(BUILD_F)/main.o: $(SRC_F)/main.cpp
+	@echo
+	@echo "\e[1;33mCompiling main.o...\e[0m"
+	@mkdir -p $(BUILD_F)
+	$(CXX) $(CXX_FLAGS) -c $(SRC_F)/main.cpp -o $(BUILD_F)/main.o
 
-# automata-rep.o: automata-rep.cpp $(HEADERS_F)/automata-rep.h
-# 	$(CXX) -c automata-rep.cpp -o $(BUILD_F)/automata-rep.o
+$(BUILD_F)/automata.o: $(SRC_F)/automata.cpp $(HEADERS_F)/automata.hpp
+	@echo
+	@echo "\e[1;33mCompiling automata.o...\e[0m"
+	@mkdir -p $(BUILD_F)
+	$(CXX) $(CXX_FLAGS) -c $(SRC_F)/automata.cpp -o $(BUILD_F)/automata.o
 
-# state.o: state.cpp $(HEADERS_F)/state.h
-# 	$(CXX) -c state.cpp -o $(BUILD_F)/state.o
+$(BUILD_F)/automata-rep.o: $(SRC_F)/automata-rep.cpp $(HEADERS_F)/automata-rep.hpp
+	@echo
+	@echo "\e[1;33mCompiling automata-rep.o...\e[0m"
+	@mkdir -p $(BUILD_F)
+	$(CXX) $(CXX_FLAGS) -c $(SRC_F)/automata-rep.cpp -o $(BUILD_F)/automata-rep.o
 
-# symbol.o: symbol.cpp $(HEADERS_F)/symbol.h
-# 	$(CXX) -c symbol.cpp -o $(BUILD_F)/symbol.o
+$(BUILD_F)/state.o: $(SRC_F)/state.cpp $(HEADERS_F)/state.hpp
+	@echo
+	@echo "\e[1;33mCompiling state.o...\e[0m"
+	@mkdir -p $(BUILD_F)
+	$(CXX) $(CXX_FLAGS) -c $(SRC_F)/state.cpp -o $(BUILD_F)/state.o
 
-# .PHONY: clean
-# clean:
-# 	rm -f $(OBJS) $(BINARY) ; rm -rf $(BUILD_F)
+$(BUILD_F)/symbol.o: $(SRC_F)/symbol.cpp $(HEADERS_F)/symbol.hpp
+	@echo
+	@echo "\e[1;33mCompiling symbol.o...\e[0m"
+	@mkdir -p $(BUILD_F)
+	$(CXX) $(CXX_FLAGS) -c $(SRC_F)/symbol.cpp -o $(BUILD_F)/symbol.o
 
 
+### phony rules
 
+# clean project build files and the executable
+.PHONY: clean
+clean:
+	@echo
+	@echo "\e[1;33mCleaning project build files and executables...\e[0m"
+	rm $(BINARY) ; rm -rf $(BUILD_F)
 
+# enable compiler warnings
+.PHONY: warns
+warns:
+	@echo
+	@echo "\e[1;33mWarnings enabled:\e[0m $(W_FLAGS)"
+	$(MAKE) CXX_FLAGS=$(CXX_FLAGS) $(W_FLAGS)
+
+# aliases
+.PHONY: e
+e: executable
+
+.PHONY: d
+d: dbg
+
+.PHONY: w
+w: warns
+
+.PHONY: c
+c: clean
+
+.PHONY: recompile r
+recompile r: clean warns executable
