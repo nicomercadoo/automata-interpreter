@@ -32,5 +32,8 @@
 *.app
 afnd-runner
 
+# Build
+build
+
 # VSC
 .vscode
