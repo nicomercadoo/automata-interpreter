@@ -3,6 +3,8 @@
 #include "../headers/symbol.hpp"
 #include <unordered_map>
 #include <optional>
+#include <fstream>
+#include <regex>
 
 AutomataRep::AutomataRep() : states() {
     this->start = nullptr;
@@ -45,7 +47,67 @@ void AutomataRep::add_transition(std::string from_state, std::string symbol, std
 
 void AutomataRep::from_dot(std::string path)
 {
-    // TODO
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file: " + path);
+    }
+
+    using std::regex_constants::egrep;
+
+    std::smatch matches;
+
+    const std::regex declaration_start(R"(^digraph\s{$)");
+    const std::regex start_state(R"("^\s*inic->([[:alnum:]]+);")");
+    const std::regex transition(R"(^\s*([[:alnum:]]*->[[:alnum:]]+ \[label="[[:alnum:]]+"\];)+)");
+    const std::regex final_state(R"(^\s*([[:alnum:]]+[shape=doublecircle];)+)");
+    const std::regex declaration_end(R"(^})");
+    const std::regex irrelavant_dot_syntax(R"((\s*//.*|^rankdir = LR;|^\s*inic\[shape=point\];))");
+
+    bool start_found = false;
+    std::string line;
+    int ln = 0;
+
+    // digraph {
+    getline(file, line); ln++;
+    if (!std::regex_match(line, declaration_start))
+        throw std::runtime_error("Invalid declaration start at line " + std::to_string(ln) + ": " + line);
+
+    while (getline(file, line)) {
+        ln++;
+        if (std::regex_match(line, declaration_end)) break;
+        if (std::regex_match(line, irrelavant_dot_syntax)) continue;
+
+        // "^\s*inic->([[:alnum:]]+);"
+        if (std::regex_match(line, matches, start_state) && !start_found) {
+            std::string state_id = matches[1];
+            State* f = get_state(state_id).value_or(add_state(state_id, true, false));
+            this->start = f;
+            continue;
+        } else {
+            throw std::runtime_error("Invalid declaration at line " + std::to_string(ln) + ": " + line);
+        }
+
+
+        if (std::regex_match(line, matches, transition)) {
+            std::string from_state = matches[1];
+            std::string to_state = matches[2];
+            std::string symbol = matches[3];
+            add_transition(from_state, symbol, to_state);
+        } else if (std::regex_match(line, matches, final_state)) {
+            std::string state_id = matches[1];
+            add_state(state_id)->set_final(true);
+        } else {
+            throw std::runtime_error("Invalid declaration at line " + std::to_string(ln) + ": " + line);
+        }
+    }
+
+
+    // }
+    getline(file, line); ln++;
+    if (!std::regex_match(line, declaration_end))
+        throw std::runtime_error("Invalid declaration at line " + std::to_string(ln) + ": " + line);
+
+    file.close();
 }
 
 void AutomataRep::to_dot(std::string path)

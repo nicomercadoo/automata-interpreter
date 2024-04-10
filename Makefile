@@ -93,4 +93,4 @@ w: warns
 c: clean
 
 .PHONY: recompile r
-recompile r: clean warns executable
+recompile r: clean warns
