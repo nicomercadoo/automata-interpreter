@@ -10,7 +10,7 @@ private:
 public:
     Symbol(T s);
     ~Symbol();
-    T get_symbol();
+    T get_symbol() const;
 
     // Overload the == operator to make the class equatable
     bool operator==(const Symbol &other) const;

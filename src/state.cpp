@@ -1,13 +1,11 @@
 #include "../headers/state.hpp"
 #include <unordered_map>
 
-State::State(std::string id)
+State::State(std::string id, bool initial, bool final) //: id(id), initial(initial), final(final)
 {
-    State(id, false, false);
-};
-
-State::State(std::string id, bool initial, bool final) : id(id), initial(initial), final(final)
-{
+    this->id = id;
+    this->initial = initial;
+    this->final = final;
     this->transitions = std::unordered_multimap<Symbol<std::string>, State*, Symbol<std::string>::hash>();
 };
 
@@ -21,6 +19,11 @@ std::string State::get_id() const
 void State::add_transition(Symbol<std::string> symbol, State* state)
 {
     this->transitions.insert({symbol, state});
+}
+
+std::unordered_multimap<Symbol<std::string>, State*, Symbol<std::string>::hash> State::get_transitions() const
+{
+    return this->transitions;
 }
 
 State *State::set_initial(bool initial)

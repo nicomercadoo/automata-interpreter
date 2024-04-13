@@ -1,14 +1,18 @@
 digraph {
     rankdir = LR;
+    node [shape = circle;];
     inic [shape = point;];
 
+    // start state
     inic -> q0;
 
-    q0 -> q1 [label = "a";];
-    q1 -> q2 [label = "b";];
-    q1 -> q1 [label = "b";];
-    q1 -> q3 [label = "a";];
-    q3 -> q3 [label = "a,b";];
+    // transitions
+    q0 -> q1 [label = "λ";]; // q0 is the start state
+    q1 -> q2 [label = "λ";]; // q2 is the final state
+    q1 -> q1 [label = "b";]; // q1 is a loop
+    q1 -> q3 [label = "a";]; // q3 is a dead state
+    q3 -> q3 [label = "a,b";]; // q3 is a dead state
 
+    // final states
     q2 [shape = doublecircle;];
 }

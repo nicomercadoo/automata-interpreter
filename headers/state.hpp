@@ -12,7 +12,6 @@ private:
     std::unordered_multimap<Symbol<std::string>, State*, Symbol<std::string>::hash> transitions;
 
 public:
-    State(std::string id);
     State(std::string id, bool initial, bool final);
     ~State();
 
@@ -45,6 +44,9 @@ public:
 
     // Make a State object with the initial and final flags set to false
     State* make_standard();
+
+    // Get the transitions of the state
+    std::unordered_multimap<Symbol<std::string>, State*, Symbol<std::string>::hash> get_transitions() const;
 
     // Overload the == operator to make the class equatable
     bool operator==(const State &other) const;

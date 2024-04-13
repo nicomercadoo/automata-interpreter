@@ -10,7 +10,12 @@ template <>
 Symbol<std::string>::~Symbol() {}
 
 template <typename T>
-T Symbol<T>::get_symbol() {
+T Symbol<T>::get_symbol() const{
+    return this->symbol;
+}
+
+template <>
+std::string Symbol<std::string>::get_symbol() const {
     return this->symbol;
 }
 

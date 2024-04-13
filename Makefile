@@ -5,7 +5,7 @@ W_FLAGS = -Wall -Wextra -Werror -Wpedantic
 HEADERS_F = headers
 SRC_F = src
 BUILD_F = build
-OBJS = $(BUILD_F)/main.o $(BUILD_F)/automata.o $(BUILD_F)/automata-rep.o $(BUILD_F)/state.o $(BUILD_F)/symbol.o
+OBJS = $(BUILD_F)/main.o $(BUILD_F)/automata.o $(BUILD_F)/automata-rep.o $(BUILD_F)/state.o $(BUILD_F)/symbol.o $(BUILD_F)/utils.o
 BINARY = ./afnd-runner
 
 # TIP: Take a look to usefull phony rules at the end of this file!
@@ -22,13 +22,10 @@ executable: $(OBJS)
 	@echo
 	@echo "\e[1;33mExecutable created:\e[0m $(BINARY)"
 
-dbg: $(OBJS)
+dbg:
 	@echo
 	@echo "\e[1;33mCreating executable with debug objects...\e[0m"
-	@mkdir -p $(BUILD_F)
-	$(CXX) $(CXX_FLAGS) -g3 -o $(BINARY) $(OBJS)
-	@echo
-	@echo "\e[1;33mExecutable with debug objects created: $(BINARY)\e[0m"
+	$(MAKE) CXX_FLAGS="$(CXX_FLAGS) -g3" executable
 
 ### objects files compilation rules
 
@@ -62,6 +59,11 @@ $(BUILD_F)/symbol.o: $(SRC_F)/symbol.cpp $(HEADERS_F)/symbol.hpp
 	@mkdir -p $(BUILD_F)
 	$(CXX) $(CXX_FLAGS) -c $(SRC_F)/symbol.cpp -o $(BUILD_F)/symbol.o
 
+$(BUILD_F)/utils.o: $(SRC_F)/utils.cpp $(HEADERS_F)/utils.hpp
+	@echo
+	@echo "\e[1;33mCompiling utils.o...\e[0m"
+	@mkdir -p $(BUILD_F)
+	$(CXX) $(CXX_FLAGS) -c $(SRC_F)/utils.cpp -o $(BUILD_F)/utils.o
 
 ### phony rules
 
