@@ -1,6 +1,8 @@
 #pragma once
 #include "symbol.hpp"
 #include <unordered_map>
+#include <vector>
+#include <optional>
 
 
 class State
@@ -47,6 +49,9 @@ public:
 
     // Get the transitions of the state
     std::unordered_multimap<Symbol<std::string>, State*, Symbol<std::string>::hash> get_transitions() const;
+
+    // Get the transitions of the state by symbol
+    std::optional<std::vector<State*>> get_transitions_by(Symbol<std::string> symbol) const;
 
     // Overload the == operator to make the class equatable
     bool operator==(const State &other) const;

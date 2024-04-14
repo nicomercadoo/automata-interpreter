@@ -33,6 +33,8 @@ public:
     void add_transition(std::string from_state, std::string symbol, std::string to_state);
     void add_state(std::string id, bool initial, bool final);
     Nature get_nature();
+    bool accept(std::string input);
+    void make_deterministic();
     auto delta(State *state, Symbol<std::string> symbol);
 };
 

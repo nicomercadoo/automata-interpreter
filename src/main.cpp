@@ -59,6 +59,8 @@ int main(int argc, char* argv[]) {
 
     auto automata = new Automata(AFND);
     automata->from_dot(argv[1]);
+    cout << std::boolalpha << automata->accept(argv[2]) << endl;
+    automata->make_deterministic();
     automata->to_dot("output.dot");
 
     return 0;

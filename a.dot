@@ -1,0 +1,21 @@
+digraph {
+    rankdir = LR;
+    node [shape = circle];
+    inic [shape=point];
+
+    inic -> q0;
+
+    q0 -> q1 [label = "a"];
+    q1 -> q1 [label="bbb"];
+    q1 -> q2 [label="bb"];
+    q2 [shape=doublecircle];
+
+    // aaaaccb
+    // {a,b}
+    // [a,a,a,a,b]
+    // allmatches (/[^(a|b)]/)
+    // [cc]
+    // {a,u,t,o}
+    // automata
+    // a u t o mata
+}

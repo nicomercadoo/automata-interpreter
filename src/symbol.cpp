@@ -38,3 +38,8 @@ template <>
 bool Symbol<std::string>::operator==(const Symbol &other) const {
   return this->symbol == static_cast<const Symbol<std::string>&>(other).symbol;
 }
+
+template <>
+bool Symbol<std::string>::operator<(const Symbol &other) const {
+  return this->symbol < static_cast<const Symbol<std::string>&>(other).symbol;
+}
