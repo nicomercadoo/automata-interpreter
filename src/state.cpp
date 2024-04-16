@@ -8,7 +8,7 @@ State::State(std::string id, bool initial, bool final) //: id(id), initial(initi
     this->id = id;
     this->initial = initial;
     this->final = final;
-    this->transitions = std::unordered_multimap<Symbol<std::string>, State *, Symbol<std::string>::hash>();
+    this->transitions = std::unordered_multimap<Symbol<std::string>, StateID, Symbol<std::string>::hash>();
 };
 
 State::~State(){};
@@ -18,19 +18,19 @@ std::string State::get_id() const
     return this->id;
 }
 
-void State::add_transition(Symbol<std::string> symbol, State *state)
+void State::add_transition(Symbol<std::string> symbol, StateID state)
 {
     this->transitions.insert({symbol, state});
 }
 
-std::unordered_multimap<Symbol<std::string>, State *, Symbol<std::string>::hash> State::get_transitions() const
+std::unordered_multimap<Symbol<std::string>, StateID, Symbol<std::string>::hash> State::get_transitions() const
 {
     return this->transitions;
 }
 
-std::optional<std::vector<State*>> State::get_transitions_by(Symbol<std::string> symbol) const
+std::optional<std::vector<StateID>> State::get_transitions_by(Symbol<std::string> symbol) const
 {
-    std::vector<State*> states;
+    std::vector<StateID> states;
 
     auto transitions_by_symbol = this->transitions.find(symbol);
 
@@ -54,16 +54,14 @@ std::optional<std::vector<State*>> State::get_transitions_by(Symbol<std::string>
     return states;
 }
 
-State *State::set_initial(bool initial)
+void State::set_initial(bool initial)
 {
     this->initial = initial;
-    return this;
 }
 
-State *State::set_final(bool final)
+void State::set_final(bool final)
 {
     this->final = final;
-    return this;
 }
 
 bool State::is_initial() const
@@ -76,32 +74,28 @@ bool State::is_final() const
     return this->final;
 }
 
-State *State::make_initial()
+void State::make_initial()
 {
     this->initial = true;
     this->final = false;
-    return this;
 }
 
-State *State::make_final()
+void State::make_final()
 {
     this->initial = false;
     this->final = true;
-    return this;
 }
 
-State *State::make_unique()
+void State::make_unique()
 {
     this->initial = true;
     this->final = true;
-    return this;
 }
 
-State *State::make_standard()
+void State::make_standard()
 {
     this->initial = false;
     this->final = false;
-    return this;
 }
 
 bool State::operator==(const State &other) const

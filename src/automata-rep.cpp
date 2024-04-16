@@ -14,51 +14,52 @@
 
 AutomataRep::AutomataRep() : states()
 {
-    this->start = nullptr;
+    this->start = "";
 }
 
 AutomataRep::~AutomataRep(){};
 
-std::optional<State *> AutomataRep::get_state(std::string state_id)
+std::optional<State> AutomataRep::get_state(std::string state_id)
 {
     auto it = this->states.find(state_id);
     if (it != this->states.end())
-        return &it->second;
+        return it->second;
     return {};
 }
 
-State *AutomataRep::add_state(State state)
+State AutomataRep::add_state(State state)
 {
     // std::cout << "Adding state (State): " << state.get_id() << "\n";
-    State *saved = &this->states.insert({state.get_id(), state}).first->second;
-    return saved;
+    this->states.insert_or_assign(state.get_id(), state).first->second;
+    return state;
     // return &this->states[state.get_id()]; // ????
 }
 
-State *AutomataRep::add_state(std::string id)
+State AutomataRep::add_state(StateID id)
 {
     // std::cout << "Adding state (string): " << id << "\n";
     return add_state(State(id, false, false));
 }
 
-State *AutomataRep::add_state(std::string id, bool initial, bool final)
+State AutomataRep::add_state(std::string id, bool initial, bool final)
 {
     // std::cout << "Adding state (string, bool, bool): " << id << "\n";
     return add_state(State(id, initial, final));
 }
 
-void AutomataRep::add_transition(std::string from_state, std::string symbol, std::string to_state)
+void AutomataRep::add_transition(StateID from_state, std::string symbol, StateID to_state)
 {
     // std::cout << "Adding transition: " << from_state << " -> " << to_state << " [label=\"" << symbol << "\"]\n";
-    auto f = get_state(from_state).value_or(add_state(from_state)); // if from_state does not exist, create it
-    auto t = get_state(to_state).value_or(add_state(to_state));     // if to_state does not exist, create it
+    State f = get_state(from_state).value_or(add_state(from_state)); // if from_state does not exist, create it
+    State t = get_state(to_state).value_or(add_state(to_state));     // if to_state does not exist, create it
     bool f_is_in_states = this->states.find(from_state) != this->states.end();
     bool t_is_in_states = this->states.find(to_state) != this->states.end();
     // std::cout << "From state: " << f->get_id() << " is into states? = " << std::boolalpha << f_is_in_states << "\n";
     // std::cout << "To state: " << t->get_id() << " is into states? = " << std::boolalpha << f_is_in_states << "\n";
     auto s = Symbol<std::string>(symbol);
     this->alphabet.insert(s);
-    f->add_transition(s, t);
+    f.add_transition(s, t.get_id());
+    this->add_state(f); // update f
 }
 
 void AutomataRep::set_alphabet(std::set<Symbol<std::string>> alphabet)
@@ -114,55 +115,53 @@ bool AutomataRep::accept(std::string input)
     std::vector<Symbol<std::string>> input_symbols;
     for (auto &symbol : str_symbols)
         input_symbols.push_back(Symbol<std::string>(symbol));
+    // std::cout << "Start state: " << current_state<< std::endl;
+    // std::cout << "transitions: (" << current_state->get_transitions().size() << ")" << std::endl;
 
-    State *current_state = this->start;
-    std::cout << "Start state: " << current_state->get_id() << std::endl;
-    std::cout << "transitions: (" << current_state->get_transitions().size() << ")" << std::endl;
+    // State current_state = this->states.find(this->start)->second;
+    // std::cout << "Start state: " << current_state.get_id() << std::endl;
+    // std::cout << "transitions: (" << current_state.get_transitions().size() << ")" << std::endl;
 
-    current_state = &this->states.find(current_state->get_id())->second;
-    std::cout << "Start state: " << current_state->get_id() << std::endl;
-    std::cout << "transitions: (" << current_state->get_transitions().size() << ")" << std::endl;
-
-    return this->accept(input_symbols, current_state);
+    return this->accept(input_symbols, this->start);
 }
 
 // recursive (non deterministic compatible) automata accept function
-bool AutomataRep::accept(std::vector<Symbol<std::string>> input, State *current_state)
+bool AutomataRep::accept(std::vector<Symbol<std::string>> input, StateID current)
 {
-    // State *current_state = this->start;
-    std::cout << "state: " << current_state->get_id() << std::endl;
-    std::cout << "transitions: (" << current_state->get_transitions().size() << ")" << std::endl;
+    // StateID current_state = this->start;
+    State current_state = this->states.find(current)->second;
+    std::cout << "state: " << current_state.get_id() << std::endl;
+    std::cout << "transitions: (" << current_state.get_transitions().size() << ")" << std::endl;
 
     Symbol<std::string> current_symbol = input.at(0);
-    auto transitions = current_state->get_transitions_by(current_symbol); // including labmbda transitions
-    // auto lambda_transitions = current_state->get_transitions_by(Symbol<std::string>("λ"));
+    auto transitions = current_state.get_transitions_by(current_symbol); // including labmbda transitions (if automata is non deterministic)
     if (!transitions.has_value())
         return false;
 
-    std::vector<State*> all_transitions;
-    all_transitions.insert(all_transitions.end(), transitions.value().begin(), transitions.value().end());
     bool accepted = false;
-    for (auto it = all_transitions.begin(); it != all_transitions.end(); ++it)
+    for (auto it = transitions.value().begin(); it != transitions.value().end(); ++it)
     {
-        auto& next_state = *it;
+        auto &next = *it;
+        State next_state = this->states.find(next)->second;
         if (input.size() == 1)
         {
-            if (next_state->is_final())
+            if (next_state.is_final())
                 accepted = true;
         }
         else
         {
             std::vector<Symbol<std::string>> next_input(input.begin() + 1, input.end());
-            accepted = accept(next_input, next_state);
+            accepted = accept(next_input, next);
         }
     }
     return accepted;
 }
 
 // returns a deterministic automata
-AutomataRep AutomataRep::make_deterministic(){
-    std::map<std::set<State*>,bool> T;
-    std::map<std::set<State*>,std::string> N;
+AutomataRep AutomataRep::make_deterministic()
+{
+    std::map<std::set<State>, bool> T;
+    std::map<std::set<State>, StateID> N;
 
     int counter = 0;
     std::string name = "q";
@@ -182,24 +181,27 @@ AutomataRep AutomataRep::make_deterministic(){
 
     D.name = this->name + "_D";
 
-
     std::cout << "Alphabet: (" << det_alphabet.size() << ")" << std::endl;
     for (auto &s : det_alphabet)
         std::cout << s.get_symbol() << std::endl;
 
-    for(auto [S,m] : T){
-        if (m) continue;
+    for (auto [S, m] : T)
+    {
+        if (m)
+            continue;
         std::cout << "State: " << N[S] << std::endl;
         for (auto &s : S)
         {
-            std::cout << s->get_id() << std::endl;
+            std::cout << s.get_id() << std::endl;
         }
 
         T.insert({S, true}); // mark S
-        for (auto a : det_alphabet){
+        for (auto a : det_alphabet)
+        {
             auto M = lambda_closure(move(S, a));
-            if (T.find(M) == T.end()){ // M is not in T
-                T.insert({M, false});  // insert M in T not marked
+            if (T.find(M) == T.end())
+            {                         // M is not in T
+                T.insert({M, false}); // insert M in T not marked
                 N.insert({M, name + std::to_string(counter++)});
             }
             D.add_transition(N[S], a.get_symbol(), N[M]);
@@ -207,73 +209,81 @@ AutomataRep AutomataRep::make_deterministic(){
     }
 
     // set final states
-    for (auto [Q, n] : N){
+    for (auto [Q, n] : N)
+    {
         std::cout << "State: " << n << std::endl;
         for (auto &m : Q)
         {
-            std::cout << m->get_id() << std::endl;
+            std::cout << m.get_id() << std::endl;
         }
 
-        for (auto s : Q){
-            if (s->is_final()){
-                D.get_state(n).value()->make_final();
+        for (auto s : Q)
+        {
+            if (s.is_final())
+            {
+                State final = D.get_state(n).value().make_final();
+                D.states.insert_or_assign(final.get_id(), final); //update final
                 break;
             }
         }
     }
 
-    D.start = D.get_state(N[Q0]).value();
+    D.start = D.get_state(N[Q0]).value().get_id();
 
     return D;
 }
 
-
-std::set<State *> AutomataRep::move_from_start(std::string symbol)
+std::set<State> AutomataRep::move_from_start(std::string symbol)
 {
-    return move({this->start}, Symbol<std::string>(symbol));
+    State start_state = this->states.find(this->start)->second;
+    return move({start_state}, Symbol<std::string>(symbol));
 }
 
-
-std::set<State *> AutomataRep::move(std::set<State *> states, Symbol<std::string> symbol)
+std::set<State> AutomataRep::move(std::set<State> states, Symbol<std::string> symbol)
 {
     std::cout << "move" << std::endl;
-    std::set<State *> reachable_states;
+    std::set<State> reachable_states;
     for (auto state : states)
     {
-        auto transitions = state->get_transitions_by(symbol);
+        auto transitions = state.get_transitions_by(symbol);
         if (transitions.has_value())
-            for (auto next : transitions.value())
-                reachable_states.insert(next);
+            for (auto next : transitions.value()) {
+                State next_state = this->states.find(next)->second;
+                reachable_states.insert(next_state);
+            }
     }
     return reachable_states;
 }
 
-std::set<State *> AutomataRep::lambda_closure_from_start()
+std::set<State> AutomataRep::lambda_closure_from_start()
 {
-    return lambda_closure({this->start});
+    State start_state = this->states.find(this->start)->second;
+    return lambda_closure({start_state});
 }
 
-std::set<State*> AutomataRep::lambda_closure(std::set<State *> states)
+std::set<State> AutomataRep::lambda_closure(std::set<State> states)
 {
     std::cout << "lambda_closure" << std::endl;
-    std::set<State *> closure;
-    std::set<State *> visited;
-    std::vector<State *> stack;
+    std::set<State> closure;
+    std::set<State> visited;
+    std::vector<State> stack;
     for (auto state : states)
         stack.push_back(state);
 
     while (!stack.empty())
     {
-        State *current = stack.back();
+        State current_state = stack.back();
         stack.pop_back();
-        if (visited.find(current) != visited.end())
+        if (visited.find(current_state) != visited.end())
             continue;
-        visited.insert(current);
-        closure.insert(current);
-        auto transitions = current->get_transitions_by(Symbol<std::string>("λ"));
+        visited.insert(current_state);
+        closure.insert(current_state);
+        auto transitions = current_state.get_transitions_by(Symbol<std::string>("λ"));
         if (transitions.has_value())
-            for (auto &next : transitions.value())
-                stack.push_back(next);
+            for (auto &next : transitions.value()) {
+                State next_state = this->states.find(next)->second;
+                stack.push_back(next_state);
+            }
     }
 
     return closure;
@@ -359,9 +369,10 @@ void AutomataRep::from_dot(std::string path)
             }
             // std::cout << "Start state found: " << matches[1] << "\n"; //dbg
             std::string state_id = matches[1];
-            State *f = get_state(state_id).value_or(add_state(state_id, true, false));
-            this->start = f;
-            f->make_initial();
+            State f = get_state(state_id).value_or(add_state(state_id, true, false));
+            this->start = f.get_id();
+            f.make_initial();
+            this->states.insert_or_assign(f.get_id(), f); // update f
             start_found = true;
             // std::cout << "Start state: " << f->get_id() << "\n";
             continue;
@@ -383,8 +394,9 @@ void AutomataRep::from_dot(std::string path)
         if (std::regex_match(line, matches, final_state))
         {
             std::string state_id = matches[1];
-            State *final = get_state(state_id).value_or(add_state(state_id, false, true));
-            final->make_final();
+            State final = get_state(state_id).value_or(add_state(state_id, false, true));
+            final.make_final();
+            this->states.insert_or_assign(final.get_id(), final); // update final
             continue;
         }
 
@@ -415,8 +427,9 @@ void AutomataRep::to_dot(std::string path)
          << "    node [shape = circle];\n";
 
     std::cout << "to_dot: start info:" << std::endl;
-    std::cout << "start: " << this->start->get_id() << std::endl;
-    std::cout << "transitions: (" << this->start->get_transitions().size() << ")" << std::endl;
+    std::cout << "start: " << this->start << std::endl;
+    State start_state = this->states.find(this->start)->second;
+    std::cout << "transitions: (" << start_state.get_transitions().size() << ")" << std::endl;
 
     for (auto &[id, state] : this->states)
     {
@@ -426,7 +439,7 @@ void AutomataRep::to_dot(std::string path)
             file << "    " << id << " [shape = doublecircle];\n";
         for (auto &[symbol, next_state] : state.get_transitions())
         {
-            file << "    " << id << " -> " << next_state->get_id() << " [label = \"" << symbol.get_symbol() << "\"];\n";
+            file << "    " << id << " -> " << next_state << " [label = \"" << symbol.get_symbol() << "\"];\n";
         }
     }
     file << "}" << std::endl;

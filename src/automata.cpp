@@ -10,6 +10,8 @@ Automata::Automata(Nature nature, std::string name) : nature(nature), rep(Automa
     this->rep.name = name;
 }
 
+Automata::~Automata() {}
+
 void Automata::add_state(std::string id, bool initial, bool final)
 {
     this->rep.add_state(id, initial, final);
@@ -38,8 +40,8 @@ void Automata::to_dot(std::string path)
 
 bool Automata::accept(std::string input)
 {
-    if (this->nature == Nature::AFND)
-        this->make_deterministic();
+    // if (this->nature == Nature::AFND)
+    //     this->make_deterministic();
         // this->to_dot("deterministic.dot");
         // this->from_dot("deterministic.dot");
     return this->rep.accept(input);

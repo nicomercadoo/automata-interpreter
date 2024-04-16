@@ -5,20 +5,22 @@
 #include <optional>
 
 
+using StateID = std::string;
+
 class State
 {
 private:
-    std::string id;
+    StateID id;
     bool initial;
     bool final;
-    std::unordered_multimap<Symbol<std::string>, State*, Symbol<std::string>::hash> transitions;
+    std::unordered_multimap<Symbol<std::string>, StateID, Symbol<std::string>::hash> transitions;
 
 public:
     State(std::string id, bool initial, bool final);
     ~State();
 
     // Add a transition to the state
-    void add_transition(Symbol<std::string> symbol, State* state);
+    void add_transition(Symbol<std::string> symbol, StateID state);
 
     // Get the state id
     std::string get_id() const;
@@ -30,28 +32,28 @@ public:
     bool is_final() const;
 
     // Set the initial flag
-    State* set_initial(bool initial);
+    void set_initial(bool initial);
 
     // Set the final flag
-    State* set_final(bool final);
+    void set_final(bool final);
 
     // Make a State object with the final flag set to true
-    State* make_initial();
+    void make_initial();
 
     // Make a State object with the initial flag set to true
-    State* make_final();
+    void make_final();
 
     // Make a State object with the initial and final flags set to true
-    State* make_unique();
+    void make_unique();
 
     // Make a State object with the initial and final flags set to false
-    State* make_standard();
+    void make_standard();
 
     // Get the transitions of the state
-    std::unordered_multimap<Symbol<std::string>, State*, Symbol<std::string>::hash> get_transitions() const;
+    std::unordered_multimap<Symbol<std::string>, StateID, Symbol<std::string>::hash> get_transitions() const;
 
     // Get the transitions of the state by symbol
-    std::optional<std::vector<State*>> get_transitions_by(Symbol<std::string> symbol) const;
+    std::optional<std::vector<StateID>> get_transitions_by(Symbol<std::string> symbol) const;
 
     // Overload the == operator to make the class equatable
     bool operator==(const State &other) const;
