@@ -6,8 +6,8 @@ digraph {
     inic -> q0;
 
     q0 -> q1 [label = "a"];
-    q1 -> q1 [label="bbb"];
-    q1 -> q2 [label="bb"];
+    q1 -> q1 [label="a"];
+    q1 -> q2 [label="b"];
     q2 [shape=doublecircle];
 
     // aaaaccb

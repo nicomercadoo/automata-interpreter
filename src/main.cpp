@@ -58,7 +58,12 @@ int main(int argc, char* argv[]) {
     }
 
     auto automata = new Automata(AFND, "AFND");
-    automata->from_dot(argv[1]);
+    std::string path = argv[1];
+    std::ifstream file(path);
+    // if (!file.is_open())
+    //     throw std::runtime_error("Could not open file: " + path);
+    // file.close();
+    automata->from_dot(path);
     // cout << "Automata nature: " << automata->get_nature() << endl;
     cout << std::boolalpha << automata->accept(argv[2]) << "\033[33m <- \033[0m" << endl;
     // automata->make_deterministic();
