@@ -57,10 +57,13 @@ int main(int argc, char* argv[]) {
         cout << "No file argument provided.";
     }
 
-    auto automata = new Automata(AFND);
+    auto automata = new Automata(AFND, "AFND");
     automata->from_dot(argv[1]);
-    cout << std::boolalpha << automata->accept(argv[2]) << endl;
-    automata->make_deterministic();
+    // cout << "Automata nature: " << automata->get_nature() << endl;
+    cout << std::boolalpha << automata->accept(argv[2]) << "\033[33m <- \033[0m" << endl;
+    // automata->make_deterministic();
+    // cout << "Automata nature: " << automata->get_nature() << endl;
+    // cout << std::boolalpha << automata->accept(argv[2]) << endl;
     automata->to_dot("output.dot");
 
     return 0;

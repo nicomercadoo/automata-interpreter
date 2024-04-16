@@ -9,6 +9,8 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <map>
+#include <string>
 
 AutomataRep::AutomataRep() : states()
 {
@@ -57,6 +59,12 @@ void AutomataRep::add_transition(std::string from_state, std::string symbol, std
     auto s = Symbol<std::string>(symbol);
     this->alphabet.insert(s);
     f->add_transition(s, t);
+}
+
+void AutomataRep::set_alphabet(std::set<Symbol<std::string>> alphabet)
+{
+    this->alphabet = alphabet;
+    gen_aplhabet_valid_symbols_regex();
 }
 
 void AutomataRep::gen_aplhabet_valid_symbols_regex()
@@ -108,6 +116,12 @@ bool AutomataRep::accept(std::string input)
         input_symbols.push_back(Symbol<std::string>(symbol));
 
     State *current_state = this->start;
+    std::cout << "Start state: " << current_state->get_id() << std::endl;
+    std::cout << "transitions: (" << current_state->get_transitions().size() << ")" << std::endl;
+
+    current_state = &this->states.find(current_state->get_id())->second;
+    std::cout << "Start state: " << current_state->get_id() << std::endl;
+    std::cout << "transitions: (" << current_state->get_transitions().size() << ")" << std::endl;
 
     return this->accept(input_symbols, current_state);
 }
@@ -116,17 +130,17 @@ bool AutomataRep::accept(std::string input)
 bool AutomataRep::accept(std::vector<Symbol<std::string>> input, State *current_state)
 {
     // State *current_state = this->start;
+    std::cout << "state: " << current_state->get_id() << std::endl;
+    std::cout << "transitions: (" << current_state->get_transitions().size() << ")" << std::endl;
+
     Symbol<std::string> current_symbol = input.at(0);
-    auto transitions = current_state->get_transitions_by(current_symbol);
-    auto lambda_transitions = current_state->get_transitions_by(Symbol<std::string>("λ"));
-    if (!transitions.has_value() && !lambda_transitions.has_value())
+    auto transitions = current_state->get_transitions_by(current_symbol); // including labmbda transitions
+    // auto lambda_transitions = current_state->get_transitions_by(Symbol<std::string>("λ"));
+    if (!transitions.has_value())
         return false;
 
     std::vector<State*> all_transitions;
-    if (transitions.has_value())
-        all_transitions.insert(all_transitions.end(), transitions.value().begin(), transitions.value().end());
-    if (lambda_transitions.has_value())
-        all_transitions.insert(all_transitions.end(), lambda_transitions.value().begin(), lambda_transitions.value().end());
+    all_transitions.insert(all_transitions.end(), transitions.value().begin(), transitions.value().end());
     bool accepted = false;
     for (auto it = all_transitions.begin(); it != all_transitions.end(); ++it)
     {
@@ -145,96 +159,108 @@ bool AutomataRep::accept(std::vector<Symbol<std::string>> input, State *current_
     return accepted;
 }
 
+// returns a deterministic automata
+AutomataRep AutomataRep::make_deterministic(){
+    std::map<std::set<State*>,bool> T;
+    std::map<std::set<State*>,std::string> N;
 
-/* void AutomataRep::make_deterministic()
-{
-    AutomataRep deterministic_rep = AutomataRep();
+    int counter = 0;
+    std::string name = "q";
 
-    std::set<State *> start_lambda_closure = this->lambda_closure_from_start();
-    std::unordered_map<std::set<State *>, State *> states_map();
-    std::vector<std::set<State *>> states_stack;
-    states_stack.push_back(start_lambda_closure);
-    while (!states_stack.empty())
-    {
-        std::set<State *> current_set = states_stack.back();
-        states_stack.pop_back();
-        State *current_state;
-        for (auto state : current_set)
-            current_state = deterministic_rep.add_state(*state);
-        states_map.emplace(current_set, current_state);
-        for (auto &symbol : this->alphabet)
+    auto Q0 = this->lambda_closure_from_start();
+
+    T.insert({Q0, false}); // insert Q0 in T not marked
+    N.insert({Q0, name + std::to_string(counter++)});
+
+    AutomataRep D = AutomataRep();
+
+    D.add_state(N[Q0], true, false);
+
+    auto det_alphabet = this->alphabet;
+    det_alphabet.erase(Symbol<std::string>("λ"));
+    D.set_alphabet(det_alphabet);
+
+    D.name = this->name + "_D";
+
+
+    std::cout << "Alphabet: (" << det_alphabet.size() << ")" << std::endl;
+    for (auto &s : det_alphabet)
+        std::cout << s.get_symbol() << std::endl;
+
+    for(auto [S,m] : T){
+        if (m) continue;
+        std::cout << "State: " << N[S] << std::endl;
+        for (auto &s : S)
         {
-            if (symbol.get_symbol() == "λ")
-                continue;
-            std::set<State *> next_set;
-            for (auto &state : current_set)
-            {
-                auto next_states = move(state, symbol);
-                next_set.insert(next_states.begin(), next_states.end());
+            std::cout << s->get_id() << std::endl;
+        }
+
+        T.insert({S, true}); // mark S
+        for (auto a : det_alphabet){
+            auto M = lambda_closure(move(S, a));
+            if (T.find(M) == T.end()){ // M is not in T
+                T.insert({M, false});  // insert M in T not marked
+                N.insert({M, name + std::to_string(counter++)});
             }
-            std::set<State *> next_lambda_closure;
-            for (auto &state : next_set)
-            {
-                auto closure = lambda_closure(state);
-                next_lambda_closure.insert(closure.begin(), closure.end());
-            }
-            if (next_lambda_closure.empty())
-                continue;
-            if (states_map.find(next_lambda_closure) == states_map.end())
-            {
-                states_stack.push_back(next_lambda_closure);
-            }
-            State *next_state = states_map.find(next_lambda_closure)->second;
-            current_state->add_transition(symbol, next_state);
+            D.add_transition(N[S], a.get_symbol(), N[M]);
         }
     }
 
-    for (auto &[set, state] : states_map)
-    {
-        for (auto &s : set)
+    // set final states
+    for (auto [Q, n] : N){
+        std::cout << "State: " << n << std::endl;
+        for (auto &m : Q)
         {
-            if (s->is_initial())
-            {
-                deterministic_rep.start = state;
+            std::cout << m->get_id() << std::endl;
+        }
+
+        for (auto s : Q){
+            if (s->is_final()){
+                D.get_state(n).value()->make_final();
                 break;
             }
         }
     }
 
-    this->nature = Nature::AFD;
-    this->states = deterministic_rep.states;
-    this->start = deterministic_rep.start;
-    this->alphabet = deterministic_rep.alphabet;
-    this->valid_symbols = deterministic_rep.valid_symbols;
-} */
+    D.start = D.get_state(N[Q0]).value();
 
-std::set<State *> AutomataRep::move_from_start(std::string symbol)
-{
-    return move(this->start, Symbol<std::string>(symbol));
+    return D;
 }
 
 
-std::set<State *> AutomataRep::move(State *state, Symbol<std::string> symbol)
+std::set<State *> AutomataRep::move_from_start(std::string symbol)
 {
+    return move({this->start}, Symbol<std::string>(symbol));
+}
+
+
+std::set<State *> AutomataRep::move(std::set<State *> states, Symbol<std::string> symbol)
+{
+    std::cout << "move" << std::endl;
     std::set<State *> reachable_states;
-    auto transitions = state->get_transitions_by(symbol);
-    if (transitions.has_value())
-        for (auto &next : transitions.value())
-            reachable_states.insert(next);
+    for (auto state : states)
+    {
+        auto transitions = state->get_transitions_by(symbol);
+        if (transitions.has_value())
+            for (auto next : transitions.value())
+                reachable_states.insert(next);
+    }
     return reachable_states;
 }
 
 std::set<State *> AutomataRep::lambda_closure_from_start()
 {
-    return lambda_closure(this->start);
+    return lambda_closure({this->start});
 }
 
-std::set<State *> AutomataRep::lambda_closure(State *state)
+std::set<State*> AutomataRep::lambda_closure(std::set<State *> states)
 {
+    std::cout << "lambda_closure" << std::endl;
     std::set<State *> closure;
     std::set<State *> visited;
     std::vector<State *> stack;
-    stack.push_back(state);
+    for (auto state : states)
+        stack.push_back(state);
 
     while (!stack.empty())
     {
@@ -387,6 +413,11 @@ void AutomataRep::to_dot(std::string path)
          << "    rankdir = LR;\n"
          << "    inic [shape = point];\n"
          << "    node [shape = circle];\n";
+
+    std::cout << "to_dot: start info:" << std::endl;
+    std::cout << "start: " << this->start->get_id() << std::endl;
+    std::cout << "transitions: (" << this->start->get_transitions().size() << ")" << std::endl;
+
     for (auto &[id, state] : this->states)
     {
         if (state.is_initial())

@@ -1,6 +1,7 @@
 #include "../headers/state.hpp"
 #include <unordered_map>
 #include <optional>
+#include <algorithm>
 
 State::State(std::string id, bool initial, bool final) //: id(id), initial(initial), final(final)
 {
@@ -29,18 +30,28 @@ std::unordered_multimap<Symbol<std::string>, State *, Symbol<std::string>::hash>
 
 std::optional<std::vector<State*>> State::get_transitions_by(Symbol<std::string> symbol) const
 {
-    auto it = this->transitions.find(symbol);
-    if (it != this->transitions.end())
+    std::vector<State*> states;
+
+    auto transitions_by_symbol = this->transitions.find(symbol);
+
+    while (transitions_by_symbol != this->transitions.end() && transitions_by_symbol->first == symbol)
     {
-        std::vector<State*> states;
-        while (it != this->transitions.end() && it->first == symbol)
-        {
-            states.push_back(it->second);
-            it++;
-        }
-        return states;
+        states.push_back(transitions_by_symbol->second);
+        transitions_by_symbol++;
     }
-    return {};
+
+    auto transitions_by_lambda = symbol != Symbol<std::string>("λ") ? this->transitions.find(Symbol<std::string>("λ")) : this->transitions.end();
+
+    while (transitions_by_lambda != this->transitions.end() && transitions_by_lambda->first == Symbol<std::string>("λ"))
+    {
+        states.push_back(transitions_by_lambda->second);
+        transitions_by_lambda++;
+    }
+
+    if (states.empty())
+        return {};
+
+    return states;
 }
 
 State *State::set_initial(bool initial)

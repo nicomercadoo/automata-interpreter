@@ -1,7 +1,14 @@
 #include "../headers/automata.hpp"
 #include <iostream>
 
-Automata::Automata(Nature nature) : nature(nature), rep(AutomataRep()) {}
+std::string Automata::rep_name()
+{
+    return this->rep.name;
+}
+
+Automata::Automata(Nature nature, std::string name) : nature(nature), rep(AutomataRep()) {
+    this->rep.name = name;
+}
 
 void Automata::add_state(std::string id, bool initial, bool final)
 {
@@ -31,7 +38,10 @@ void Automata::to_dot(std::string path)
 
 bool Automata::accept(std::string input)
 {
-    // this->make_deterministic();
+    if (this->nature == Nature::AFND)
+        this->make_deterministic();
+        // this->to_dot("deterministic.dot");
+        // this->from_dot("deterministic.dot");
     return this->rep.accept(input);
 }
 
@@ -40,28 +50,10 @@ void Automata::make_deterministic()
 {
     if (this->nature == Nature::AFD)
         return;
-    AutomataRep deterministic_rep = AutomataRep();
 
-    std::set<State*> start_lambda_closure = this->rep.lambda_closure_from_start();
-    // print
-    std::cout << "lambda_closure:" << std::endl;
+    AutomataRep deterministic_rep = this->rep.make_deterministic();
 
-    for (auto state : start_lambda_closure)
-    {
-        std::cout << state->get_id() << std::endl;
-    }
-
-    std::set<State*> move = this->rep.move_from_start("b");
-    // print
-    std::cout << "move_from_start:" << std::endl;
-    for (auto state : move)
-    {
-        std::cout << state->get_id() << std::endl;
-    }
-
-    // doit det...
-
-    this->nature = Nature::AFND;
+    this->nature = Nature::AFD;
     this->rep = deterministic_rep;
 }
 

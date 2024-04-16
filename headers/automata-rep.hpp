@@ -16,6 +16,7 @@ private:
     std::regex valid_symbols; // expresión regular para validar los símbolos del alfabeto
     std::map<std::string,State> states; // acá se guardan todos los estados del automata (se puede ver como un conjunto de State)
 public:
+    std::string name; // nombre del automata
     AutomataRep();
     ~AutomataRep();
     State* add_state(State state);
@@ -29,10 +30,11 @@ public:
     void to_dot(std::string path);
     bool accept(std::string input);
     bool accept(std::vector<Symbol<std::string>> input, State* current_state);
-    std::set<State*> lambda_closure(State* state);
+    void set_alphabet(std::set<Symbol<std::string>> alphabet);
+    std::set<State*> lambda_closure(std::set<State *> states);
     std::set<State*> lambda_closure_from_start();
-    std::set<State*> move(State* state, Symbol<std::string> symbol);
+    std::set<State*> move(std::set<State *> states, Symbol<std::string> symbol);
     std::set<State*> move_from_start(std::string symbol);
-    void make_deterministic();
+    AutomataRep make_deterministic();
     // auto delta(State *state, Symbol<std::string> symbol);
 };

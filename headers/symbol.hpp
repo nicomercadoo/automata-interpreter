@@ -15,6 +15,9 @@ public:
     // Overload the == operator to make the class equatable
     bool operator==(const Symbol &other) const;
 
+    // Overload the != operator to make the class equatable
+    bool operator!=(const Symbol &other) const;
+
     // Overload the < operator to make the class comparable
     bool operator<(const Symbol &other) const;
 

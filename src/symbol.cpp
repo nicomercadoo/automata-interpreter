@@ -25,6 +25,11 @@ bool Symbol<T>::operator==(const Symbol<T> &other) const{
 }
 
 template <typename T>
+bool Symbol<T>::operator!=(const Symbol<T> &other) const{
+    return symbol != other.symbol;
+}
+
+template <typename T>
 bool Symbol<T>::operator<(const Symbol<T> &other) const {
     return symbol < other.symbol;
 }
@@ -37,6 +42,11 @@ Symbol<std::string>::Symbol(std::string s) : symbol(s) {
 template <>
 bool Symbol<std::string>::operator==(const Symbol &other) const {
   return this->symbol == static_cast<const Symbol<std::string>&>(other).symbol;
+}
+
+template <>
+bool Symbol<std::string>::operator!=(const Symbol &other) const {
+  return this->symbol != static_cast<const Symbol<std::string>&>(other).symbol;
 }
 
 template <>
