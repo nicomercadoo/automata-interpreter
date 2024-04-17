@@ -1,11 +1,11 @@
 # far - finite automata runner
 TP 1 de la materia Autómatas y Lenguajes.
 
-El programa permite evaluar si una cadena es aceptada por un automata o no.
+El programa permite evaluar si una cadena es aceptada por un autómata o no.
 
 ## Descripción
-El automata se ingresa en formato .dot, el mismo puede ser deterministico o no.
-Por defecto lo convierte a determinisico para hacer las evaluaciones más eficientes. Sin embargo con la opcion `--no-convert` se puede forzar que la evalucaion se haga sobre el no deterministico.
+El autómata se ingresa en formato .dot, el mismo puede ser deterministico o no.
+Por defecto lo convierte a determinisico para hacer las evaluaciones más eficientes. Sin embargo, con la opcion `--no-convert` se puede forzar que la evaluación se haga sobre el no deterministico.
 
 De manera automática el programa escribe el autómata deterministico generado en `output.dot`, aunque este comportamiento se puede modificar con los flags `-o <path>` y `--no-output-file`.
 
@@ -16,7 +16,7 @@ Se pueden ver las demás opciones con el flag `--help`.
 
 Para ejecutar el programa con un archivo `.dot` y una cadena a evaluar, se puede hacer lo siguiente:
 
-Se quiere verificar que "aaab" es aceptada por el siguiente automata:
+Se quiere verificar que "aaab" es aceptada por el siguiente autómata:
 ![non deterministic automata](non-det-aut.svg)
 
 ````dot
@@ -31,7 +31,7 @@ digraph {
     // start state
     inic -> q0;
 
-    // tracncitions
+    // transitions
     q0 -> q1 [label="b"]
     q0 -> q2 [label="λ,b"]
     q1 -> q1 [label="a"]
@@ -88,7 +88,7 @@ digraph {
 - `g++` (C++17)
 - `make`
 
-### Compilación
+### Compilación:
 ````
 $ make
 $ make clean
