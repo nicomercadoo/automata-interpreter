@@ -1,14 +1,8 @@
 #include "../headers/automata.hpp"
+#include "../headers/utils.hpp"
 #include <iostream>
 
-std::string Automata::rep_name()
-{
-    return this->rep.name;
-}
-
-Automata::Automata(Nature nature, std::string name) : nature(nature), rep(AutomataRep()) {
-    this->rep.name = name;
-}
+Automata::Automata(Nature nature) : nature(nature), rep(AutomataRep()){}
 
 Automata::~Automata() {}
 
@@ -29,34 +23,37 @@ Nature Automata::get_nature()
 
 void Automata::from_dot(std::string path)
 {
+    if (RuntimeCfg::verbose)
+        std::cout << "Reading automata..." << std::endl;
     this->rep.from_dot(path);
 }
 
 void Automata::to_dot(std::string path)
 {
+    if (RuntimeCfg::verbose)
+        std::cout << "Writing automata..." << std::endl;
     this->rep.to_dot(path);
 }
 
-
 bool Automata::accept(std::string input)
 {
-    if (this->nature == Nature::AFND)
-        this->make_deterministic();
-        // this->to_dot("deterministic.dot");
-        // this->from_dot("deterministic.dot");
+    this->make_deterministic();
+
+    if (RuntimeCfg::verbose)
+        std::cout << "Running automata with: \"" << input << "\"..." << std::endl;
     return this->rep.accept(input);
 }
 
-
 void Automata::make_deterministic()
 {
-    if (this->nature == Nature::AFD)
+
+    if (this->nature == Nature::AFD || RuntimeCfg::no_convertion)
         return;
 
+    if (RuntimeCfg::verbose)
+        std::cout << "Converting to deterministic automata..." << std::endl;
     AutomataRep deterministic_rep = this->rep.make_deterministic();
 
     this->nature = Nature::AFD;
     this->rep = deterministic_rep;
 }
-
-

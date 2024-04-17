@@ -1,10 +1,19 @@
 digraph {
     rankdir = LR;
     inic [shape = point];
+    edge [arrowsize = 0.8, penwidth = 0.8];
     node [shape = circle];
+
+    // initial state
     inic -> q0;
+
+    // transitions
     q0 -> q1 [label = "a"];
-    q1 -> q2 [label = "b"];
+    q0 -> q2 [label = "b"];
     q1 -> q1 [label = "a"];
+    q1 -> q2 [label = "b"];
+    q2 -> q2 [label = "a, b"];
+
+    // final states
     q2 [shape = doublecircle];
 }

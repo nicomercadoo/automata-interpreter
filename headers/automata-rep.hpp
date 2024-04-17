@@ -17,7 +17,6 @@ private:
     std::regex valid_symbols; // expresión regular para validar los símbolos del alfabeto
     std::map<StateID,State> states; // acá se guardan todos los estados del automata (se puede ver como un conjunto de State)
 public:
-    std::string name; // nombre del automata
     AutomataRep();
     ~AutomataRep();
     State add_state(State state);

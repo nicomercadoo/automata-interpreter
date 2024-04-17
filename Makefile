@@ -6,7 +6,7 @@ HEADERS_F = headers
 SRC_F = src
 BUILD_F = build
 OBJS = $(BUILD_F)/main.o $(BUILD_F)/automata.o $(BUILD_F)/automata-rep.o $(BUILD_F)/state.o $(BUILD_F)/symbol.o $(BUILD_F)/utils.o
-BINARY = ./afnd-runner
+BINARY = ./far
 
 # TIP: Take a look to usefull phony rules at the end of this file!
 
@@ -68,11 +68,18 @@ $(BUILD_F)/utils.o: $(SRC_F)/utils.cpp $(HEADERS_F)/utils.hpp
 ### phony rules
 
 # clean project build files and the executable
-.PHONY: clean
-clean:
+.PHONY: clear
+clear:
 	@echo
 	@echo "\e[1;33mCleaning project build files and executables...\e[0m"
 	rm $(BINARY) ; rm -rf $(BUILD_F)
+
+# clean only project build files
+.PHONY: clean
+clean:
+	@echo
+	@echo "\e[1;33mCleaning project build files...\e[0m"
+	rm -rf $(BUILD_F)
 
 # enable compiler warnings
 .PHONY: warns
@@ -95,4 +102,4 @@ w: warns
 c: clean
 
 .PHONY: recompile r
-recompile r: clean warns
+recompile r: clear warns
