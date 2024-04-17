@@ -219,6 +219,7 @@ bool AutomataRep::accept(std::vector<Symbol<std::string>> input, StateID current
 // returns a deterministic automata
 AutomataRep AutomataRep::make_deterministic()
 {
+    std::cout << "Deterministic Automata: " << this->name << std::endl;
     std::map<std::set<State>, bool> T;
     std::map<std::set<State>, StateID> N;
 

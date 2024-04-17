@@ -40,8 +40,8 @@ void Automata::to_dot(std::string path)
 
 bool Automata::accept(std::string input)
 {
-    // if (this->nature == Nature::AFND)
-    //     this->make_deterministic();
+    if (this->nature == Nature::AFND)
+        this->make_deterministic();
         // this->to_dot("deterministic.dot");
         // this->from_dot("deterministic.dot");
     return this->rep.accept(input);

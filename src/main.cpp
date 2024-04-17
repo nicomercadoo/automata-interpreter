@@ -5,6 +5,12 @@
 #include <regex>
 #include <string>
 
+//TODO: modificar to_dot para cuando haya mas de un simbolo por transicion
+//TODO: parsear argumentos
+//TODO: implementar flags y runtimecfg
+//TODO: implementar usage
+//TODO: hacer el readme
+
 using namespace std;
 
 int main(int argc, char* argv[]) {
