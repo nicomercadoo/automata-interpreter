@@ -2,7 +2,7 @@
 #include "../headers/utils.hpp"
 #include <iostream>
 
-Automata::Automata(Nature nature) : nature(nature), rep(AutomataRep()){}
+Automata::Automata(Nature nature) : nature(nature), rep(AutomataRep()) {}
 
 Automata::~Automata() {}
 
@@ -44,10 +44,15 @@ bool Automata::accept(std::string input)
     return this->rep.accept(input);
 }
 
+bool Automata::deterministic_inv()
+{
+    return this->rep.deterministic_inv();
+}
+
 void Automata::make_deterministic()
 {
 
-    if (this->nature == Nature::AFD || RuntimeCfg::no_convertion)
+    if (this->nature == Nature::AFD || RuntimeCfg::no_convert)
         return;
 
     if (RuntimeCfg::verbose)

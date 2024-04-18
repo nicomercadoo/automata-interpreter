@@ -3,7 +3,7 @@
 #include <optional>
 #include <algorithm>
 
-State::State(std::string id, bool initial, bool final) //: id(id), initial(initial), final(final)
+State::State(std::string id, bool initial, bool final)
 {
     this->id = id;
     this->initial = initial;

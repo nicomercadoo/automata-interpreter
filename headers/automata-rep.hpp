@@ -36,4 +36,5 @@ public:
     std::set<State> move(std::set<State> states, Symbol<std::string> symbol);
     std::set<State> move_from_start(std::string symbol);
     AutomataRep make_deterministic();
+    bool deterministic_inv();
 };

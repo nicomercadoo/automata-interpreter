@@ -10,46 +10,54 @@ template <>
 Symbol<std::string>::~Symbol() {}
 
 template <typename T>
-T Symbol<T>::get_symbol() const{
-    return this->symbol;
+T Symbol<T>::get_symbol() const
+{
+  return this->symbol;
 }
 
 template <>
-std::string Symbol<std::string>::get_symbol() const {
-    return this->symbol;
+std::string Symbol<std::string>::get_symbol() const
+{
+  return this->symbol;
 }
 
 template <typename T>
-bool Symbol<T>::operator==(const Symbol<T> &other) const{
-    return symbol == other.symbol;
+bool Symbol<T>::operator==(const Symbol<T> &other) const
+{
+  return symbol == other.symbol;
 }
 
 template <typename T>
-bool Symbol<T>::operator!=(const Symbol<T> &other) const{
-    return symbol != other.symbol;
+bool Symbol<T>::operator!=(const Symbol<T> &other) const
+{
+  return symbol != other.symbol;
 }
 
 template <typename T>
-bool Symbol<T>::operator<(const Symbol<T> &other) const {
-    return symbol < other.symbol;
+bool Symbol<T>::operator<(const Symbol<T> &other) const
+{
+  return symbol < other.symbol;
 }
 
 template <>
-Symbol<std::string>::Symbol(std::string s) : symbol(s) {
-
+Symbol<std::string>::Symbol(std::string s) : symbol(s)
+{
 }
 
 template <>
-bool Symbol<std::string>::operator==(const Symbol &other) const {
-  return this->symbol == static_cast<const Symbol<std::string>&>(other).symbol;
+bool Symbol<std::string>::operator==(const Symbol &other) const
+{
+  return this->symbol == static_cast<const Symbol<std::string> &>(other).symbol;
 }
 
 template <>
-bool Symbol<std::string>::operator!=(const Symbol &other) const {
-  return this->symbol != static_cast<const Symbol<std::string>&>(other).symbol;
+bool Symbol<std::string>::operator!=(const Symbol &other) const
+{
+  return this->symbol != static_cast<const Symbol<std::string> &>(other).symbol;
 }
 
 template <>
-bool Symbol<std::string>::operator<(const Symbol &other) const {
-  return this->symbol < static_cast<const Symbol<std::string>&>(other).symbol;
+bool Symbol<std::string>::operator<(const Symbol &other) const
+{
+  return this->symbol < static_cast<const Symbol<std::string> &>(other).symbol;
 }

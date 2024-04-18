@@ -1,0 +1,71 @@
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="266pt" height="127pt" viewBox="0.00 0.00 265.97 127.19">
+<g id="graph0" class="graph" transform="translate(4,123.19000244140625) scale(1)" data-name="">
+<polygon fill="white" stroke="none" points="-4,4 -4,-123.19 261.97,-123.19 261.97,4 -4,4" style=""/>
+<!-- inic -->
+<g id="node1" class="node" pointer-events="visible" data-name="inic">
+
+<ellipse fill="black" stroke="black" cx="1.8" cy="-24.69" rx="1.8" ry="1.8" style=""/>
+</g>
+<!-- q0 -->
+<g id="node2" class="node" pointer-events="visible" data-name="q0">
+
+<ellipse fill="none" stroke="black" cx="61.29" cy="-24.69" rx="20.89" ry="20.89" style=""/>
+<text text-anchor="middle" x="61.29" y="-20.49" font-family="Times,serif" font-size="14.00" style="">q0</text>
+</g>
+<!-- inic&#45;&gt;q0 -->
+<g id="edge1" class="edge" data-name="inic-&gt;q0">
+
+<path fill="none" stroke="black" stroke-width="0.8" d="M3.8,-24.69C7.24,-24.69 19.09,-24.69 31.05,-24.69" style=""/>
+<polygon fill="black" stroke="black" stroke-width="0.8" points="30.87,-27.49 38.87,-24.69 30.87,-21.89 30.87,-27.49" style=""/>
+</g>
+<!-- q1 -->
+<g id="node3" class="node" pointer-events="visible" data-name="q1">
+
+<ellipse fill="none" stroke="black" cx="144.89" cy="-63.69" rx="20.89" ry="20.89" style=""/>
+<text text-anchor="middle" x="144.89" y="-59.49" font-family="Times,serif" font-size="14.00" style="">q1</text>
+</g>
+<!-- q0&#45;&gt;q1 -->
+<g id="edge2" class="edge" data-name="q0-&gt;q1">
+
+<path fill="none" stroke="black" stroke-width="0.8" d="M80.4,-33.35C91.31,-38.56 105.4,-45.3 117.53,-51.09" style=""/>
+<polygon fill="black" stroke="black" stroke-width="0.8" points="116.03,-53.48 124.46,-54.41 118.45,-48.43 116.03,-53.48" style=""/>
+<text text-anchor="middle" x="103.09" y="-48.89" font-family="Times,serif" font-size="14.00" style="">a</text>
+</g>
+<!-- q2 -->
+<g id="node4" class="node" pointer-events="visible" data-name="q2">
+
+<ellipse fill="none" stroke="black" cx="233.28" cy="-24.69" rx="20.86" ry="20.86" style=""/>
+<ellipse fill="none" stroke="black" cx="233.28" cy="-24.69" rx="24.89" ry="24.89" style=""/>
+<text text-anchor="middle" x="233.28" y="-20.49" font-family="Times,serif" font-size="14.00" style="">q2</text>
+</g>
+<!-- q0&#45;&gt;q2 -->
+<g id="edge3" class="edge" data-name="q0-&gt;q2">
+
+<path fill="none" stroke="black" stroke-width="0.8" d="M82.31,-21.53C94.4,-19.77 110.15,-17.78 124.2,-16.89 142.56,-15.74 147.22,-15.82 165.59,-16.89 176.57,-17.53 188.52,-18.76 199.23,-20.06" style=""/>
+<polygon fill="black" stroke="black" stroke-width="0.8" points="198.77,-22.82 207.06,-21.05 199.48,-17.27 198.77,-22.82" style=""/>
+<text text-anchor="middle" x="144.89" y="-20.89" font-family="Times,serif" font-size="14.00" style="">b</text>
+</g>
+<!-- q1&#45;&gt;q1 -->
+<g id="edge4" class="edge" data-name="q1-&gt;q1">
+
+<path fill="none" stroke="black" stroke-width="0.8" d="M137.29,-83.6C136.24,-93.53 138.77,-102.39 144.89,-102.39 149.01,-102.39 151.5,-98.39 152.38,-92.75" style=""/>
+<polygon fill="black" stroke="black" stroke-width="0.8" points="155.18,-92.85 152.48,-84.81 149.58,-92.77 155.18,-92.85" style=""/>
+<text text-anchor="middle" x="144.89" y="-106.59" font-family="Times,serif" font-size="14.00" style="">a</text>
+</g>
+<!-- q1&#45;&gt;q2 -->
+<g id="edge5" class="edge" data-name="q1-&gt;q2">
+
+<path fill="none" stroke="black" stroke-width="0.8" d="M164.21,-55.42C175.08,-50.52 189.13,-44.17 201.64,-38.53" style=""/>
+<polygon fill="black" stroke="black" stroke-width="0.8" points="202.76,-41.09 208.9,-35.25 200.45,-35.99 202.76,-41.09" style=""/>
+<text text-anchor="middle" x="187.09" y="-49.89" font-family="Times,serif" font-size="14.00" style="">b</text>
+</g>
+<!-- q2&#45;&gt;q2 -->
+<g id="edge6" class="edge" data-name="q2-&gt;q2">
+
+<path fill="none" stroke="black" stroke-width="0.8" d="M224.72,-48.4C224.02,-58.63 226.88,-67.39 233.28,-67.39 237.69,-67.39 240.41,-63.25 241.45,-57.34" style=""/>
+<polygon fill="black" stroke="black" stroke-width="0.8" points="244.24,-57.72 241.79,-49.61 238.65,-57.48 244.24,-57.72" style=""/>
+<text text-anchor="middle" x="233.28" y="-71.59" font-family="Times,serif" font-size="14.00" style="">a, b</text>
+</g>
+</g>
+</svg>

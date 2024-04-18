@@ -61,7 +61,7 @@ accepted
 ````
 
 Y devuelve en `output.dot`
-![output (equivalent deterministic automata)](output.svg)
+![output (equivalent deterministic automata)](output-non-det-aut.svg)
 
 ````dot
 digraph {
@@ -70,15 +70,25 @@ digraph {
     edge [arrowsize = 0.8, penwidth = 0.8];
     node [shape = circle];
 
+    // start state
     inic -> q0;
-    q0 -> q2 [label = "b"];
-    q0 -> q1 [label = "a"];
-    q1 -> q2 [label = "b"];
+
+    // transitions
+    q0 -> q1 [label = "b"];
+    q0 -> q2 [label = "b, λ"];
     q1 -> q1 [label = "a"];
-    q2 [shape = doublecircle];
+    q1 -> q2 [label = "a"];
+    q2 -> q1 [label = "b"];
     q2 -> q2 [label = "b"];
-    q2 -> q2 [label = "a"];
+    q2 -> q3 [label = "λ"];
+    q3 -> q4 [label = "λ"];
+    q4 -> q2 [label = "a"];
+
+    // final states
+    q1 [shape = doublecircle];
+
 }
+
 ````
 
 ## Build

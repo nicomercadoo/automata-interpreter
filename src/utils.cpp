@@ -45,9 +45,8 @@ std::vector<std::string> all_matches(std::regex re, std::string text)
     return matches;
 }
 
-bool checks_dot_sintax(std::string path)
+void show(std::string path)
 {
-    bool correct_syntax = true;
     std::string line;
     std::ifstream myfile(path);
     if (myfile.is_open())
@@ -55,8 +54,6 @@ bool checks_dot_sintax(std::string path)
         int ln = 1;
         while (getline(myfile, line))
         {
-            std::cout << line << std::endl;
-            ;
             if (std::regex_match(line, declaration_start))
             {
                 std::cout << line << "\033[1;90m (declaration_start)\033[0m"
@@ -92,6 +89,41 @@ bool checks_dot_sintax(std::string path)
                 std::cout << "Invalid declaration in " << path << "\n"
                           << std::right << std::setw(6) << ln << " |" << line << "\n"
                           << "\n";
+            }
+
+            ln++;
+        }
+        myfile.close();
+    }
+}
+
+bool check_syntax(std::string path)
+{
+    bool correct_syntax = true;
+    std::string line;
+    std::ifstream myfile(path);
+    if (myfile.is_open())
+    {
+        int ln = 1;
+        while (getline(myfile, line))
+        {
+            if (std::regex_match(line, declaration_start))
+                ;
+            else if (std::regex_match(line, start_state))
+                ;
+            else if (std::regex_match(line, transition))
+                ;
+            else if (std::regex_match(line, final_state))
+                ;
+            else if (std::regex_match(line, declaration_end))
+                ;
+            else if (std::regex_match(line, irrelavant_dot_syntax))
+                ;
+            else if (!std::regex_match(line, std::regex(R"(^\s*)")))
+            {
+                std::cout << "Invalid declaration in " << path << "\n"
+                          << std::right << std::setw(6) << ln << " |" << line << "\n"
+                          << "\n";
                 correct_syntax = false;
             }
 
@@ -102,26 +134,67 @@ bool checks_dot_sintax(std::string path)
     return correct_syntax;
 }
 
+
+void print_help(std::string program_name)
+{
+    std::cout << "Usage: " << program_name << " INPUT_FILE [OPTIONS] [INPUT_STRING]\n"
+              << "Options:\n"
+              << "  -h, --help\t\tShow this help message\n"
+              << "  -v, --verbose\t\tVerbose mode\n"
+              << "  -o, --output [OUTPUT_FILE]\tOutput file path\n"
+              << "  -i, --input [INPUT_FILE]\tInput file path\n"
+              << "  -s, --string [INPUT_STRING]\tInput string\n"
+              << "  -c, --check-deterministic\tCheck if the automata is deterministic\n"
+              << "  -d, --make-deterministic\tConvert the input automata to deterministic\n"
+              << "  --no-output-file\tDo not output the automata to a file\n"
+              << "  --no-convert\tDo not convert the input automata to deterministic\n"
+              << "  --check-syntax\tCheck if the input file has the correct syntax\n"
+              << "  --show\tShow the input automata\n";
+}
+
 void parse_args(int argc, char *argv[])
 {
     bool output_path_set = false;
     bool input_path_set = false;
     bool input_string_set = false;
+    bool check_determinism_set = false;
+    bool check_syntax_set = false;
+    bool show_set = false;
+    bool make_deterministic_set = false;
 
     for (int i = 1; i < argc; i++)
     {
+        if (check_determinism_set && input_path_set)
+            break;
+        if (check_syntax_set && input_path_set)
+            break;
+        if (show_set && input_path_set)
+            break;
+        if (make_deterministic_set && input_path_set)
+            break;
+
         if (std::regex_match(argv[i], std::regex(R"(-h|--help)")))
         {
-            std::cout << "Usage: " << argv[0] << " [OPTIONS] [INPUT_FILE] [INPUT_STRING]\n"
-                      << "Options:\n"
-                      << "  -h, --help\t\tShow this help message\n"
-                      << "  -v, --verbose\t\tVerbose mode\n"
-                      << "  --no-convert\tDo not convert the input automata to deterministic\n"
-                      << "  --no-output-file\tDo not output the automata to a file\n"
-                      << "  -o, --output [OUTPUT_FILE]\tOutput file path\n"
-                      << "  -i, --input [INPUT_FILE]\tInput file path\n"
-                      << "  -s, --string [INPUT_STRING]\tInput string\n";
-            exit(EXIT_SUCCESS);
+            RuntimeCfg::help = true;
+        }
+        else if (std::regex_match(argv[i], std::regex(R"(-d|--make-deterministic)")))
+        {
+            RuntimeCfg::just_make_deterministic = true;
+        }
+        else if (std::regex_match(argv[i], std::regex(R"(--check-syntax)")))
+        {
+            RuntimeCfg::check_syntax = true;
+            check_syntax_set = true;
+        }
+        else if (std::regex_match(argv[i], std::regex(R"(--show)")))
+        {
+            RuntimeCfg::show = true;
+            show_set = true;
+        }
+        else if (std::regex_match(argv[i], std::regex(R"(-c|--check-determinism)")))
+        {
+            RuntimeCfg::check_determinism = true;
+            check_determinism_set = true;
         }
         else if (std::regex_match(argv[i], std::regex(R"(-v|--verbose)")))
         {
@@ -129,7 +202,7 @@ void parse_args(int argc, char *argv[])
         }
         else if (std::string(argv[i]) == "--no-convert")
         {
-            RuntimeCfg::no_convertion = true;
+            RuntimeCfg::no_convert = true;
         }
         else if (std::string(argv[i]) == "--no-output-file")
         {
@@ -169,9 +242,14 @@ void parse_args(int argc, char *argv[])
     }
 }
 
+bool RuntimeCfg::help = false;
 bool RuntimeCfg::verbose = false;
-bool RuntimeCfg::no_convertion = false;
+bool RuntimeCfg::show = false;
 bool RuntimeCfg::no_output_file = false;
+bool RuntimeCfg::check_syntax = false;
+bool RuntimeCfg::check_determinism = false;
+bool RuntimeCfg::no_convert = false;
+bool RuntimeCfg::just_make_deterministic = false;
 std::string RuntimeCfg::output_path = "output.dot";
 std::string RuntimeCfg::input_path = "";
 std::string RuntimeCfg::input_string = "";
