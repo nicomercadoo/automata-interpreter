@@ -30,7 +30,7 @@
 *.exe
 *.out
 *.app
-afnd-runner
+far
 
 # Build
 build
