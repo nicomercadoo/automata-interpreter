@@ -91,8 +91,10 @@ std::vector<std::string> AutomataRep::get_symbols_in_str(std::string input)
     {
         if (std::regex_match(std::string(1, s), this->valid_symbols))
         {
-            if (!acc.empty())
+            if (!acc.empty()){
                 symbols.push_back(acc);
+                acc.clear();
+            }
             symbols.push_back(std::string(1, s));
             continue;
         }

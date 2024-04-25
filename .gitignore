@@ -37,3 +37,6 @@ build
 
 # VSC
 .vscode
+
+# Others
+output.dot
