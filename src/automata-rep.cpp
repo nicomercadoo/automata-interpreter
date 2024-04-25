@@ -87,8 +87,17 @@ std::vector<std::string> AutomataRep::get_symbols_in_str(std::string input)
 {
     std::vector<std::string> symbols;
     std::string acc;
+    char separator = ' ';
     for (auto &s : input)
     {
+        if (s == separator){
+            if (!acc.empty()){
+                symbols.push_back(acc);
+                acc.clear();
+            }
+            continue;
+        }
+
         if (std::regex_match(std::string(1, s), this->valid_symbols))
         {
             if (!acc.empty()){
