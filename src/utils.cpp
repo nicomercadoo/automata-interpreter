@@ -139,17 +139,17 @@ void print_help(std::string program_name)
 {
     std::cout << "Usage: " << program_name << " INPUT_FILE [OPTIONS] [INPUT_STRING]\n"
               << "Options:\n"
-              << "  -h, --help\t\tShow this help message\n"
-              << "  -v, --verbose\t\tVerbose mode\n"
-              << "  -o, --output [OUTPUT_FILE]\tOutput file path\n"
-              << "  -i, --input [INPUT_FILE]\tInput file path\n"
-              << "  -s, --string [INPUT_STRING]\tInput string\n"
-              << "  -c, --check-deterministic\tCheck if the automata is deterministic\n"
-              << "  -d, --make-deterministic\tConvert the input automata to deterministic\n"
-              << "  --no-output-file\tDo not output the automata to a file\n"
-              << "  --no-convert\tDo not convert the input automata to deterministic\n"
-              << "  --check-syntax\tCheck if the input file has the correct syntax\n"
-              << "  --show\tShow the input automata\n";
+              << "  -h, --help                      Show this help message\n"
+              << "  -v, --verbose                   Verbose mode\n"
+              << "  -o, --output [OUTPUT_FILE]      Output file path\n"
+              << "  -i, --input [INPUT_FILE]        Input file path\n"
+              << "  -s, --string [INPUT_STRING]     Input string\n"
+              << "  -c, --check-deterministic       Check if the automata is deterministic\n"
+              << "  -d, --make-deterministic        Convert the input automata to deterministic\n"
+              << "  --no-output-file                Do not output the automata to a file\n"
+              << "  --no-convert                    Do not convert the input automata to deterministic\n"
+              << "  --check-syntax                  Check if the input file has the correct syntax\n"
+              << "  --show                          Show the input automata\n";
 }
 
 void parse_args(int argc, char *argv[])
@@ -210,16 +210,16 @@ void parse_args(int argc, char *argv[])
         }
         else if (std::regex_match(argv[i], std::regex(R"(-o|--output)")))
         {
-            RuntimeCfg::output_path = argv[i + 1];
+            RuntimeCfg::output_path = argv[++i];
         }
         else if (!input_string_set && std::regex_match(argv[i], std::regex(R"(-i|--input)")))
         {
-            RuntimeCfg::input_path = argv[i + 1];
+            RuntimeCfg::input_path = argv[++i];
             input_path_set = true;
         }
         else if (!input_string_set && std::regex_match(argv[i], std::regex(R"(-s|--string)")))
         {
-            RuntimeCfg::input_string = argv[i + 1];
+            RuntimeCfg::input_string = argv[++i];
             input_string_set = true;
         }
         else if (!input_path_set && std::regex_match(argv[i], std::regex(R"(.*\.dot$)")))
