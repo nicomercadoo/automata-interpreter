@@ -27,8 +27,9 @@ public:
     static bool check_syntax;
     static bool check_determinism;
     static bool show;
+    static bool merge;
     static std::string output_path;
-    static std::string input_path;
+    static std::vector<std::string> input_paths;
     static std::string input_string;
 };
 

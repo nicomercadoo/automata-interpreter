@@ -18,15 +18,26 @@ int main(int argc, char *argv[])
         exit(EXIT_SUCCESS);
     }
 
-    if (RuntimeCfg::input_path.empty())
+    if (RuntimeCfg::input_paths.empty())
     {
         cerr << "Input file not provided" << endl;
         exit(EXIT_FAILURE);
     }
 
+    if (RuntimeCfg::merge)
+    {
+        auto automata1 = Automata(AFND);
+        auto automata2 = Automata(AFND);
+        automata1.from_dot(RuntimeCfg::input_paths[0]);
+        automata2.from_dot(RuntimeCfg::input_paths[1]);
+        auto merged = automata1.merge(automata2);
+        merged.to_dot(RuntimeCfg::output_path);
+        exit(EXIT_SUCCESS);
+    }
+
     auto automata = Automata(AFND);
     std::ifstream file(RuntimeCfg::input_string);
-    automata.from_dot(RuntimeCfg::input_path);
+    automata.from_dot(RuntimeCfg::input_paths[0]);
 
     if (RuntimeCfg::check_determinism)
     {
@@ -37,14 +48,14 @@ int main(int argc, char *argv[])
 
     if (RuntimeCfg::check_syntax)
     {
-        std::string is_correct = check_syntax(RuntimeCfg::input_path) ? "\033[32mcorrect syntax\033[0m" : "\033[31mincorrect syntax\033[0m";
+        std::string is_correct = check_syntax(RuntimeCfg::input_paths[0]) ? "\033[32mcorrect syntax\033[0m" : "\033[31mincorrect syntax\033[0m";
         cout << is_correct << endl;
         exit(EXIT_SUCCESS);
     }
 
     if (RuntimeCfg::show)
     {
-        show(RuntimeCfg::input_path);
+        show(RuntimeCfg::input_paths[0]);
         exit(EXIT_SUCCESS);
     }
 
