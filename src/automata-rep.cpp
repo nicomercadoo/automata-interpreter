@@ -463,3 +463,37 @@ void AutomataRep::to_dot(std::string path)
     file << "}" << std::endl;
     file.close();
 }
+
+AutomataRep AutomataRep::merge(AutomataRep &other)
+{
+    AutomataRep result = AutomataRep();
+
+    result.set_alphabet(this->alphabet);
+    result.alphabet.merge(other.alphabet);
+
+    result.add_state("q", true, false);
+
+    for (const auto& [id, state] : this->states) {
+        result.add_state(state);
+    }
+    for (const auto& [id, state] : this->states) {
+        for (const auto& [symbol, next_state] : state.get_transitions()) {
+            result.add_transition(id, symbol.get_symbol(), next_state);
+        }
+    }
+
+    for (const auto& [id, state] : other.states) {
+        result.add_state(state);
+    }
+    for (const auto& [id, state] : other.states) {
+        for (const auto& [symbol, next_state] : state.get_transitions()) {
+            result.add_transition(id, symbol.get_symbol(), next_state);
+        }
+    }
+
+    result.add_transition(new_start.get_id(), "λ", this->start);
+    result.add_transition(new_start.get_id(), "λ", other.start);
+
+    return result;
+}
+

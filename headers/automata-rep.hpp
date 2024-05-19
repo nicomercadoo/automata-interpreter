@@ -31,10 +31,12 @@ public:
     bool accept(std::string input);
     bool accept(std::vector<Symbol<std::string>> input, StateID current_state);
     void set_alphabet(std::set<Symbol<std::string>> alphabet);
+    std::set<Symbol<std::string>> get_alphabet();
     std::set<State> lambda_closure(std::set<State> states);
     std::set<State> lambda_closure_from_start();
     std::set<State> move(std::set<State> states, Symbol<std::string> symbol);
     std::set<State> move_from_start(std::string symbol);
     AutomataRep make_deterministic();
     bool deterministic_inv();
+    AutomataRep merge(AutomataRep &other);
 };

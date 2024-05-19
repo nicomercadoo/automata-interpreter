@@ -4,6 +4,8 @@
 
 Automata::Automata(Nature nature) : nature(nature), rep(AutomataRep()) {}
 
+Automata::Automata(AutomataRep rep, Nature nature) : nature(nature), rep(rep) {}
+
 Automata::~Automata() {}
 
 void Automata::add_state(std::string id, bool initial, bool final)
@@ -61,4 +63,12 @@ void Automata::make_deterministic()
 
     this->nature = Nature::AFD;
     this->rep = deterministic_rep;
+}
+
+Automata Automata::merge(Automata &other)
+{
+    if(RuntimeCfg::verbose)
+    std::cout << "Merging automatas ..." << std::endl;
+
+    return Automata(rep.merge(other.rep), Nature::AFND);
 }

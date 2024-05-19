@@ -26,6 +26,7 @@ private:
 
 public:
     Automata(Nature nature);
+    Automata(AutomataRep rep, Nature nature);
     ~Automata();
     bool deterministic_inv(); // determina si el automata es deterministico y esta correctamente implementado (ningun nodo tiene mas de una transicion con el mismo simbolo y no teine transiciones lambda)
     void from_dot(std::string path);
@@ -35,5 +36,6 @@ public:
     Nature get_nature();
     bool accept(std::string input);
     void make_deterministic();
+    Automata merge(Automata &other);
 };
 
