@@ -1,0 +1,27 @@
+digraph {
+    rankdir = LR;
+    inic [shape = point];
+    edge [arrowsize = 0.8, penwidth = 0.8];
+    node [shape = circle];
+
+    // start state
+    inic -> qu3;
+
+    // transitions
+    q0 -> q2 [label = "b"];
+    q1 -> q1 [label = "a"];
+    q2 -> q0 [label = "a"];
+    qu1 -> q1 [label = "a"];
+    qu2 -> q0 [label = "λ"];
+    qu2 -> qu1 [label = "λ"];
+    q2 -> qf1 [label = "λ"];
+    q1 -> qf1 [label = "λ"];
+
+    qk3 -> qu2 [label = "λ"];
+    qf1 -> qf2 [label = "λ"];
+
+    // final states
+    q0 [shape = doublecircle];
+    q1 [shape = doublecircle];
+    qf2 [shape = doublecircle];
+}

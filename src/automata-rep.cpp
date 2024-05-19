@@ -90,8 +90,10 @@ std::vector<std::string> AutomataRep::get_symbols_in_str(std::string input)
     char separator = ' ';
     for (auto &s : input)
     {
-        if (s == separator){
-            if (!acc.empty()){
+        if (s == separator)
+        {
+            if (!acc.empty())
+            {
                 symbols.push_back(acc);
                 acc.clear();
             }
@@ -100,7 +102,8 @@ std::vector<std::string> AutomataRep::get_symbols_in_str(std::string input)
 
         if (std::regex_match(std::string(1, s), this->valid_symbols))
         {
-            if (!acc.empty()){
+            if (!acc.empty())
+            {
                 symbols.push_back(acc);
                 acc.clear();
             }
@@ -290,12 +293,13 @@ std::set<State> AutomataRep::lambda_closure(std::set<State> states)
 
 bool AutomataRep::deterministic_inv()
 {
-    for (const auto& [id, state] : this->states) {
+    for (const auto &[id, state] : this->states)
+    {
         std::map<Symbol<std::string>, std::vector<StateID>> transitions;
-        for (const auto& [symbol, next_state] : state.get_transitions())
+        for (const auto &[symbol, next_state] : state.get_transitions())
             transitions[symbol].push_back(next_state);
 
-        for (const auto& [symbol, next_states] : transitions)
+        for (const auto &[symbol, next_states] : transitions)
             if (next_states.size() > 1)
                 return false;
     }
@@ -471,22 +475,53 @@ AutomataRep AutomataRep::merge(AutomataRep &other)
     result.set_alphabet(this->alphabet);
     result.alphabet.merge(other.alphabet);
 
-    result.add_state("q", true, false);
-
-    for (const auto& [id, state] : this->states) {
-        result.add_state(state);
+    // Chequear si ya son uniones previas y elige el número más grande para
+    // crear un nuevo id
+    
+    std::smatch matches;
+    int max_union_number = 0;
+    if (std::regex_match(this->start, matches, std::regex(R"(qu(\d+))")))
+    {
+        int union_number = std::stoi(matches[1]);
+        if (union_number > max_union_number)
+            max_union_number = union_number;
     }
-    for (const auto& [id, state] : this->states) {
-        for (const auto& [symbol, next_state] : state.get_transitions()) {
+    if (std::regex_match(other.start, matches, std::regex(R"(qu(\d+))")))
+    {
+        int union_number = std::stoi(matches[1]);
+        if (union_number > max_union_number)
+            max_union_number = union_number;
+    }
+    max_union_number++;
+    State new_start = State("qu" + std::to_string(max_union_number), true, false);
+    result.add_state(new_start);
+
+    for (const auto &[id, state] : this->states)
+    {
+        if (state.is_final())
+            result.add_state(id, false, true);
+        else
+            result.add_state(id, false, false);
+    }
+    for (const auto &[id, state] : this->states)
+    {
+        for (const auto &[symbol, next_state] : state.get_transitions())
+        {
             result.add_transition(id, symbol.get_symbol(), next_state);
         }
     }
 
-    for (const auto& [id, state] : other.states) {
-        result.add_state(state);
+    for (const auto &[id, state] : other.states)
+    {
+        if (state.is_final())
+            result.add_state(id, false, true);
+        else
+            result.add_state(id, false, false);
     }
-    for (const auto& [id, state] : other.states) {
-        for (const auto& [symbol, next_state] : state.get_transitions()) {
+    for (const auto &[id, state] : other.states)
+    {
+        for (const auto &[symbol, next_state] : state.get_transitions())
+        {
             result.add_transition(id, symbol.get_symbol(), next_state);
         }
     }
@@ -496,4 +531,3 @@ AutomataRep AutomataRep::merge(AutomataRep &other)
 
     return result;
 }
-

@@ -1,0 +1,15 @@
+digraph {
+    rankdir = LR;
+    node [shape = circle];
+    inic [shape=point];
+
+    // start state
+    inic -> qu1;
+
+    // tracncitions
+    qu1 -> q1 [label="a"];
+    q1 -> q1 [label="a"];
+
+    // final states
+    q1 [shape=doublecircle];
+}
