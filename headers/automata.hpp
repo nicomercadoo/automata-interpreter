@@ -37,5 +37,8 @@ public:
     bool accept(std::string input);
     void make_deterministic();
     Automata merge(Automata &other);
+    Automata concat(Automata &other);
+    Automata kleene();
+    Automata minimize();
 };
 

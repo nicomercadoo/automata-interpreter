@@ -28,6 +28,9 @@ public:
     static bool check_determinism;
     static bool show;
     static bool merge;
+    static bool concat;
+    static bool kleene;
+    static bool minimize;
     static std::string output_path;
     static std::vector<std::string> input_paths;
     static std::string input_string;

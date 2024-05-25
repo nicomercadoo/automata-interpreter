@@ -72,3 +72,27 @@ Automata Automata::merge(Automata &other)
 
     return Automata(rep.merge(other.rep), Nature::AFND);
 }
+
+Automata Automata::concat(Automata &other)
+{
+    if(RuntimeCfg::verbose)
+    std::cout << "Concating automatas ..." << std::endl;
+
+    return Automata(rep.concat(other.rep), Nature::AFND);
+}
+
+Automata Automata::kleene()
+{
+    if(RuntimeCfg::verbose)
+    std::cout << "Making Kleene closure to the automata ..." << std::endl;
+
+    return Automata(rep.kleene_closure(), Nature::AFND);
+}
+
+Automata Automata::minimize()
+{
+    if(RuntimeCfg::verbose)
+    std::cout << "Minimizing the automata ..." << std::endl;
+
+    return Automata(rep.minimize(), Nature::AFD);
+}

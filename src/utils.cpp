@@ -144,6 +144,9 @@ void print_help(std::string program_name)
               << "  -i, --input [INPUT_FILE]                    Input file path\n"
               << "  -s, --string [INPUT_STRING]                 Input string\n"
               << "  -m, --merge [INPUT_FILE_1] [INPUT_FILE_2]   Merge the input automata with the automata in the input file\n"
+              << "  -t  --concat [INPUT_FILE_1] [INPUT_FILE_2]  Concat the input automata with the automata in the input file\n"
+              << "  -k  --kleene [INPUT_FILE]                   Kleene closure the input automata with the automata in the file\n"
+              << "  -n  --minimize [INPUT_FILE]                 Do the minimize algoritm to the automata in the input file\n"
               << "  -c, --check-deterministic                   Check if the automata is deterministic\n"
               << "  -d, --make-deterministic                    Convert the input automata to deterministic\n"
               << "      --no-output-file                        Do not output the automata to a file\n"
@@ -207,6 +210,25 @@ void parse_args(int argc, char *argv[])
             RuntimeCfg::input_paths.push_back(argv[++i]);
             input_paths_set = RuntimeCfg::input_paths.size();
         }
+        else if (std::regex_match(argv[i], std::regex(R"(-t|--concat)")))
+        {
+            RuntimeCfg::concat = true;
+            RuntimeCfg::input_paths.push_back(argv[++i]);
+            RuntimeCfg::input_paths.push_back(argv[++i]);
+            input_paths_set = RuntimeCfg::input_paths.size();
+        }
+        else if (std::regex_match(argv[i], std::regex(R"(-k|--kleene)")))
+        {
+            RuntimeCfg::kleene = true;
+            RuntimeCfg::input_paths.push_back(argv[++i]);
+            input_paths_set = RuntimeCfg::input_paths.size();
+        }
+        else if (std::regex_match(argv[i], std::regex(R"(-n|--minimize)")))
+        {
+            RuntimeCfg::minimize = true;
+            RuntimeCfg::input_paths.push_back(argv[++i]);
+            input_paths_set = RuntimeCfg::input_paths.size();
+        }
         else if (std::string(argv[i]) == "--no-convert")
         {
             RuntimeCfg::no_convert = true;
@@ -258,6 +280,8 @@ bool RuntimeCfg::check_determinism = false;
 bool RuntimeCfg::no_convert = false;
 bool RuntimeCfg::just_make_deterministic = false;
 bool RuntimeCfg::merge = false;
+bool RuntimeCfg::concat = false;
+bool RuntimeCfg::kleene = false;
 std::string RuntimeCfg::output_path = "output.dot";
 std::vector<std::string> RuntimeCfg::input_paths = {};
 std::string RuntimeCfg::input_string = "";

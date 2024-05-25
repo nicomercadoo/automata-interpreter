@@ -531,3 +531,198 @@ AutomataRep AutomataRep::merge(AutomataRep &other)
 
     return result;
 }
+
+AutomataRep AutomataRep::concat(const AutomataRep& other) {
+    AutomataRep result = AutomataRep();
+
+    result.set_alphabet(this->alphabet);
+    result.alphabet.merge(other.alphabet);
+
+    for (const auto& [id, state] : this->states) {
+        if (state.is_final())
+            result.add_state(id, false , false);
+        else
+            result.add_state(state);
+    }
+    for (const auto& [id, state] : this->states) {
+        for (const auto& [symbol, next_state] : state.get_transitions()) {
+            result.add_transition(id, symbol.get_symbol(), next_state);
+        }
+    }
+
+    for (const auto& [id, state] : other.states) {
+        if (state.is_initial())
+            result.add_state(id, false, false);
+        else
+            result.add_state(state);
+    }
+    for (const auto& [id, state] : other.states) {
+        for (const auto& [symbol, next_state] : state.get_transitions()) {
+            result.add_transition(id, symbol.get_symbol(), next_state);
+        }
+    }
+
+    for (const auto& [id, state] : this->states) {
+        if (state.is_final()) {
+            result.add_transition(id, "λ", other.start);
+        }
+    }
+
+    result.start = this->start;
+    for (const auto& [id, state] : other.states) {
+        if (state.is_final()) {
+            State final = result.get_state(id).value();
+            final.set_final(true);
+            result.add_state(final);
+        }
+    }
+
+    return result;
+}
+
+// Método para la clausura de Kleene
+AutomataRep AutomataRep::kleene_closure() {
+    AutomataRep result = AutomataRep();
+
+    result.set_alphabet(this->alphabet);
+
+    std::smatch matches;
+    int max_kleene_number = 0;
+    if (std::regex_match(this->start, matches, std::regex(R"(qk(\d+))")))
+    {
+        int kleene_number = std::stoi(matches[1]);
+        if (kleene_number > max_kleene_number)
+            max_kleene_number = kleene_number;
+    }
+    max_kleene_number++;
+    State new_start = State("qk" + std::to_string(max_kleene_number), true, false);
+    result.add_state(new_start);
+
+    int max_final_number = 0;
+    if (std::regex_match(this->start, matches, std::regex(R"(qf(\d+))")))
+    {
+        int final_number = std::stoi(matches[1]);
+        if (final_number > max_final_number)
+            max_final_number = final_number;
+    }
+    max_final_number++;
+    State new_final = State("qf" + std::to_string(max_final_number), false, true);
+    result.add_state(new_final);
+
+    for (const auto& [id, state] : this->states) {
+        result.add_state(state);
+    }
+    for (const auto& [id, state] : this->states) {
+        for (const auto& [symbol, next_state] : state.get_transitions()) {
+            result.add_transition(id, symbol.get_symbol(), next_state);
+        }
+    }
+
+    result.add_transition(new_start.get_id(), "λ", this->start);
+
+    for (const auto& [id, state] : this->states) {
+        if (state.is_final()) {
+            result.add_transition(id, "λ", new_final.get_id());
+            result.add_transition(id, "λ", this->start);
+        }
+    }
+
+    result.add_transition(new_start.get_id(), "λ", new_final.get_id());
+
+    return result;
+}
+
+AutomataRep AutomataRep::minimize() {
+    if (!deterministic_inv()) {
+        throw std::runtime_error("El autómata no es determinista.");
+    }
+
+    // Eliminar estados inaccesibles
+    std::set<StateID> reachable_states;
+    std::vector<StateID> to_visit = {this->start};
+    while (!to_visit.empty()) {
+        StateID current = to_visit.back();
+        to_visit.pop_back();
+        if (reachable_states.find(current) == reachable_states.end()) {
+            reachable_states.insert(current);
+            for (const auto& [symbol, next_state] : this->states[current].get_transitions()) {
+                to_visit.push_back(next_state);
+            }
+        }
+    }
+
+    std::unordered_map<StateID, State> accessible_states;
+    for (const auto& state_id : reachable_states) {
+        accessible_states.insert({state_id, this->states[state_id]});
+    }
+
+    // Crear la tabla de indistinguibilidad
+    std::unordered_map<StateID, std::unordered_map<StateID, bool>> distinguishable;
+    for (const auto& [state1_id, state1] : accessible_states) {
+        for (const auto& [state2_id, state2] : accessible_states) {
+            if (state1_id < state2_id) {
+                distinguishable[state1_id][state2_id] = state1.is_final() != state2.is_final();
+            }
+        }
+    }
+
+    bool updated;
+    do {
+        updated = false;
+        for (const auto& [state1_id, state1] : accessible_states) {
+            for (const auto& [state2_id, state2] : accessible_states) {
+                if (state1_id < state2_id && !distinguishable[state1_id][state2_id]) {
+                    for (const auto& symbol : this->alphabet) {
+                        StateID next1 = state1.get_transitions_by(symbol).value_or(std::vector<StateID>{}).front();
+                        StateID next2 = state2.get_transitions_by(symbol).value_or(std::vector<StateID>{}).front();
+                        if (next1 != next2) {
+                            if (next1 < next2) {
+                                if (distinguishable[next1][next2]) {
+                                    distinguishable[state1_id][state2_id] = true;
+                                    updated = true;
+                                    break;
+                                }
+                            } else {
+                                if (distinguishable[next2][next1]) {
+                                    distinguishable[state1_id][state2_id] = true;
+                                    updated = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } while (updated);
+
+    // Unir estados indistinguibles
+    std::unordered_map<StateID, StateID> new_state_ids;
+    for (const auto& [state1_id, state1] : accessible_states) {
+        for (const auto& [state2_id, state2] : accessible_states) {
+            if (state1_id < state2_id && !distinguishable[state1_id][state2_id]) {
+                new_state_ids[state2_id] = state1_id;
+            }
+        }
+    }
+
+    AutomataRep minimized_automaton;
+    for (const auto& [state_id, state] : accessible_states) {
+        StateID new_id = state_id;
+        while (new_state_ids.find(new_id) != new_state_ids.end()) {
+            new_id = new_state_ids[new_id];
+        }
+        if (!minimized_automaton.get_state(new_id).has_value()) {
+            minimized_automaton.add_state(new_id, state.is_initial(), state.is_final());
+        }
+        for (const auto& [symbol, next_state] : state.get_transitions()) {
+            StateID new_next_id = next_state;
+            while (new_state_ids.find(new_next_id) != new_state_ids.end()) {
+                new_next_id = new_state_ids[new_next_id];
+            }
+            minimized_automaton.add_transition(new_id, symbol.get_symbol(), new_next_id);
+        }
+    }
+
+    return minimized_automaton;
+}
