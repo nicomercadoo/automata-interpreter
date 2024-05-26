@@ -11,5 +11,5 @@ digraph {
     q2 -> q0 [label="a"];
 
     // final states
-    q0 [shape=doublecircle]; 
+    q0 [shape = doublecircle];
 }

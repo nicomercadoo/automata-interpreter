@@ -477,7 +477,7 @@ AutomataRep AutomataRep::merge(AutomataRep &other)
 
     // Chequear si ya son uniones previas y elige el número más grande para
     // crear un nuevo id
-    
+
     std::smatch matches;
     int max_union_number = 0;
     if (std::regex_match(this->start, matches, std::regex(R"(qu(\d+))")))
@@ -532,35 +532,33 @@ AutomataRep AutomataRep::merge(AutomataRep &other)
     return result;
 }
 
-AutomataRep AutomataRep::concat(const AutomataRep& other) {
+AutomataRep AutomataRep::concat(AutomataRep& other) {
     AutomataRep result = AutomataRep();
 
     result.set_alphabet(this->alphabet);
     result.alphabet.merge(other.alphabet);
 
-    for (const auto& [id, state] : this->states) {
-        if (state.is_final())
-            result.add_state(id, false , false);
+    StateID initial_second;
+    // Carga los estados del segundo automata
+    for (auto& [id, state] : other.states) {
+        if (state.is_initial()){
+            initial_second = state.get_id();
+            result.add_state(state.make_standard());
+        }
         else
             result.add_state(state);
-    }
-    for (const auto& [id, state] : this->states) {
-        for (const auto& [symbol, next_state] : state.get_transitions()) {
-            result.add_transition(id, symbol.get_symbol(), next_state);
-        }
     }
 
-    for (const auto& [id, state] : other.states) {
-        if (state.is_initial())
-            result.add_state(id, false, false);
+    // Carga los estados del primer automata
+    for (auto& [id, state] : this->states) {
+        if (state.is_final()){
+            state.add_transition(Symbol<std::string>("λ"), initial_second);
+            result.add_state(state.make_standard());
+        }
         else
             result.add_state(state);
     }
-    for (const auto& [id, state] : other.states) {
-        for (const auto& [symbol, next_state] : state.get_transitions()) {
-            result.add_transition(id, symbol.get_symbol(), next_state);
-        }
-    }
+
 
     for (const auto& [id, state] : this->states) {
         if (state.is_final()) {
@@ -568,14 +566,6 @@ AutomataRep AutomataRep::concat(const AutomataRep& other) {
         }
     }
 
-    result.start = this->start;
-    for (const auto& [id, state] : other.states) {
-        if (state.is_final()) {
-            State final = result.get_state(id).value();
-            final.set_final(true);
-            result.add_state(final);
-        }
-    }
 
     return result;
 }
@@ -608,19 +598,21 @@ AutomataRep AutomataRep::kleene_closure() {
     max_final_number++;
     State new_final = State("qf" + std::to_string(max_final_number), false, true);
     result.add_state(new_final);
-
-    for (const auto& [id, state] : this->states) {
-        result.add_state(state);
-    }
-    for (const auto& [id, state] : this->states) {
-        for (const auto& [symbol, next_state] : state.get_transitions()) {
-            result.add_transition(id, symbol.get_symbol(), next_state);
+    StateID initial;
+    for (auto& [id, state] : this->states) {
+        if (state.is_initial())
+            initial = state.get_id();
+        if (state.is_final()){
+            state.add_transition(Symbol<std::string>("λ"), new_final.get_id());
+            state.add_transition(Symbol<std::string>("λ"), initial);
         }
+        result.add_state(state.make_standard());
     }
+
 
     result.add_transition(new_start.get_id(), "λ", this->start);
 
-    for (const auto& [id, state] : this->states) {
+    for (auto& [id, state] : this->states) {
         if (state.is_final()) {
             result.add_transition(id, "λ", new_final.get_id());
             result.add_transition(id, "λ", this->start);
@@ -632,10 +624,7 @@ AutomataRep AutomataRep::kleene_closure() {
     return result;
 }
 
-AutomataRep AutomataRep::minimize() {
-    if (!deterministic_inv()) {
-        throw std::runtime_error("El autómata no es determinista.");
-    }
+/*AutomataRep AutomataRep::minimize() {
 
     // Eliminar estados inaccesibles
     std::set<StateID> reachable_states;
@@ -645,7 +634,8 @@ AutomataRep AutomataRep::minimize() {
         to_visit.pop_back();
         if (reachable_states.find(current) == reachable_states.end()) {
             reachable_states.insert(current);
-            for (const auto& [symbol, next_state] : this->states[current].get_transitions()) {
+            auto current_transitions = this->states.at(current).get_transitions();
+            for (auto [symbol, next_state] : current_transitions) {
                 to_visit.push_back(next_state);
             }
         }
@@ -725,4 +715,4 @@ AutomataRep AutomataRep::minimize() {
     }
 
     return minimized_automaton;
-}
+}*/

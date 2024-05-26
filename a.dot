@@ -1,0 +1,42 @@
+digraph {
+    rankdir = LR;
+    node [shape = circle];
+    inic [shape=point];
+
+    // start state
+    // inic -> q0;
+    inic -> q1;
+
+    // tracncitions
+
+    q1 -> q1 [label="a"];
+    q1 -> q2 [label="b"];
+    q1 -> q3 [label="c"];
+    q2 -> q2 [label="a"];
+    q2 -> q3 [label="b,c"];
+    q3 -> q3 [label="a,b,c"];
+
+    // q0 -> q1 [label="λ"]
+    // q1 -> q2 [label="c"]
+    // q2 -> q7 [label="λ"]
+    // q0 -> q3 [label="λ"]
+    // q3 -> q4 [label="b"]
+    // q4 -> q4 [label="a"]
+    // q4 -> q5 [label="b"]
+    // q5 -> q7 [label="λ"]
+    // q4 -> q6 [label="c"]
+    // q6 -> q7 [label="λ"]
+    // q7 -> q8 [label="λ"]
+    // q8 -> q9 [label="a"]
+    // q8 -> q10 [label="b"]
+    // q8 -> q11 [label="c"]
+    // q9 -> q12 [label="λ"]
+    // q10 -> q12 [label="λ"]
+    // q11 -> q12 [label="λ"]
+    // q12 -> q8 [label="λ"]
+    // q8 -> q12 [label="λ"]
+
+    // final states
+    // q12 [shape=doublecircle];
+    q3 [shape = doublecircle];
+}

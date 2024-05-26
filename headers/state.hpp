@@ -38,16 +38,16 @@ public:
     void set_final(bool final);
 
     // Make a State object with the final flag set to true
-    void make_initial();
+    State make_initial();
 
     // Make a State object with the initial flag set to true
-    void make_final();
+    State make_final();
 
     // Make a State object with the initial and final flags set to true
-    void make_unique();
+    State make_unique();
 
     // Make a State object with the initial and final flags set to false
-    void make_standard();
+    State make_standard();
 
     // Get the transitions of the state
     std::unordered_multimap<Symbol<std::string>, StateID, Symbol<std::string>::hash> get_transitions() const;

@@ -89,10 +89,13 @@ Automata Automata::kleene()
     return Automata(rep.kleene_closure(), Nature::AFND);
 }
 
-Automata Automata::minimize()
-{
-    if(RuntimeCfg::verbose)
-    std::cout << "Minimizing the automata ..." << std::endl;
+// Automata Automata::minimize()
+// {
+//     if(RuntimeCfg::verbose)
+//     std::cout << "Minimizing the automata ..." << std::endl;
 
-    return Automata(rep.minimize(), Nature::AFD);
-}
+//     if (this->nature == Nature::AFND)
+//         this->rep = rep.make_deterministic();
+
+//     return Automata(rep.minimize(), Nature::AFD);
+// }

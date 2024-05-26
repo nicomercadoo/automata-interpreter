@@ -39,6 +39,6 @@ public:
     Automata merge(Automata &other);
     Automata concat(Automata &other);
     Automata kleene();
-    Automata minimize();
+    // Automata minimize();
 };
 

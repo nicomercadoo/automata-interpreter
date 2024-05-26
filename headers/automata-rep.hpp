@@ -39,7 +39,7 @@ public:
     AutomataRep make_deterministic();
     bool deterministic_inv();
     AutomataRep merge(AutomataRep &other);
-    AutomataRep concat(const AutomataRep& other);
+    AutomataRep concat(AutomataRep& other);
     AutomataRep kleene_closure();
-    AutomataRep minimize();
+    // AutomataRep minimize();
 };

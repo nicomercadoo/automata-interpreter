@@ -74,28 +74,32 @@ bool State::is_final() const
     return this->final;
 }
 
-void State::make_initial()
+State State::make_initial()
 {
     this->initial = true;
     this->final = false;
+    return *this;
 }
 
-void State::make_final()
+State State::make_final()
 {
     this->initial = false;
     this->final = true;
+    return *this;
 }
 
-void State::make_unique()
+State State::make_unique()
 {
     this->initial = true;
     this->final = true;
+    return *this;
 }
 
-void State::make_standard()
+State State::make_standard()
 {
     this->initial = false;
     this->final = false;
+    return *this;
 }
 
 bool State::operator==(const State &other) const
