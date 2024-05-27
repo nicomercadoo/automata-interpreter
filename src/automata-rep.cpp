@@ -624,8 +624,11 @@ AutomataRep AutomataRep::kleene_closure() {
     return result;
 }
 
-/*AutomataRep AutomataRep::minimize() {
 
+
+AutomataRep AutomataRep::minimize() {
+
+    std::cout << "Minimizing automaton..." << std::endl;
     // Eliminar estados inaccesibles
     std::set<StateID> reachable_states;
     std::vector<StateID> to_visit = {this->start};
@@ -641,11 +644,14 @@ AutomataRep AutomataRep::kleene_closure() {
         }
     }
 
+
+    std::cout << "Removing unreachable states..." << std::endl;
     std::unordered_map<StateID, State> accessible_states;
-    for (const auto& state_id : reachable_states) {
-        accessible_states.insert({state_id, this->states[state_id]});
+    for (auto& state_id : reachable_states) {
+        accessible_states.insert({state_id, this->states.at(state_id)});
     }
 
+    std::cout << "Creating indistinguishability table..." << std::endl;
     // Crear la tabla de indistinguibilidad
     std::unordered_map<StateID, std::unordered_map<StateID, bool>> distinguishable;
     for (const auto& [state1_id, state1] : accessible_states) {
@@ -656,6 +662,8 @@ AutomataRep AutomataRep::kleene_closure() {
         }
     }
 
+    std::cout << "Refining partitions..." << std::endl;
+    // Refinar particiones
     bool updated;
     do {
         updated = false;
@@ -686,16 +694,19 @@ AutomataRep AutomataRep::kleene_closure() {
         }
     } while (updated);
 
+
+    std::cout << "Merging indistinguishable states..." << std::endl;
     // Unir estados indistinguibles
     std::unordered_map<StateID, StateID> new_state_ids;
-    for (const auto& [state1_id, state1] : accessible_states) {
-        for (const auto& [state2_id, state2] : accessible_states) {
+    for (auto& [state1_id, state1] : accessible_states) {
+        for (auto& [state2_id, state2] : accessible_states) {
             if (state1_id < state2_id && !distinguishable[state1_id][state2_id]) {
                 new_state_ids[state2_id] = state1_id;
             }
         }
     }
 
+    std::cout << "Creating minimized automaton..." << std::endl;
     AutomataRep minimized_automaton;
     for (const auto& [state_id, state] : accessible_states) {
         StateID new_id = state_id;
@@ -710,9 +721,13 @@ AutomataRep AutomataRep::kleene_closure() {
             while (new_state_ids.find(new_next_id) != new_state_ids.end()) {
                 new_next_id = new_state_ids[new_next_id];
             }
+            // if (distinguishable[new_id][new_next_id]) {
+            // minimized_automaton.add_transition(new_id, symbol.get_symbol(), new_next_id);
+            // }
             minimized_automaton.add_transition(new_id, symbol.get_symbol(), new_next_id);
         }
     }
 
     return minimized_automaton;
-}*/
+    // return *this;
+}

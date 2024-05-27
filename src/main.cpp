@@ -55,14 +55,14 @@ int main(int argc, char *argv[])
         exit(EXIT_SUCCESS);
     }
 
-    // if (RuntimeCfg::minimize)
-    // {
-    //     auto automata6 = Automata(AFD);
-    //     automata6.from_dot(RuntimeCfg::input_paths[0]);
-    //     auto minimized = automata6.minimize();
-    //     minimized.to_dot(RuntimeCfg::output_path);
-    //     exit(EXIT_SUCCESS);
-    // }
+    if (RuntimeCfg::minimize)
+    {
+        auto automata6 = Automata(AFD);
+        automata6.from_dot(RuntimeCfg::input_paths[0]);
+        auto minimized = automata6.minimize();
+        minimized.to_dot(RuntimeCfg::output_path);
+        exit(EXIT_SUCCESS);
+    }
 
     auto automata = Automata(AFND);
     std::ifstream file(RuntimeCfg::input_string);

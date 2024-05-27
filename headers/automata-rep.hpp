@@ -41,5 +41,5 @@ public:
     AutomataRep merge(AutomataRep &other);
     AutomataRep concat(AutomataRep& other);
     AutomataRep kleene_closure();
-    // AutomataRep minimize();
+    AutomataRep minimize();
 };
